@@ -34,13 +34,13 @@ class MockGyozaServer extends GyozaServer {
  * by the {@link http} module.
  */
 class MockResponse {
-    status_code;
+    statusCode;
     headers;
     body;
     ended = false;
 
     writeHead(statusCode, headers) {
-        this.status_code = statusCode;
+        this.statusCode = statusCode;
         this.headers = headers;
     }
 
