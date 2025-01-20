@@ -1,5 +1,8 @@
 const http = require('http');
 
+const { SERVER_NAME } = require("./gyoza-git");
+const capitalizeFully = require('./string_utils')
+
 /**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
@@ -146,6 +149,12 @@ class GyozaServer {
      * @private
      */
     _response(response, statusCode, body = null, headers = {}) {
+        const tempHeaders = {}
+        Object.keys(headers).forEach(key =>
+            tempHeaders[capitalizeFully(key.toString())] = headers[key])
+        headers = tempHeaders
+        headers['Server'] = SERVER_NAME
+
         response.writeHead(statusCode, headers);
         if (body != null) {
             if (body instanceof String) response.write(body)
