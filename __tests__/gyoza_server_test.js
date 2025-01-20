@@ -1,4 +1,5 @@
 const GyozaServer = require("../src/gyoza_server");
+const {SERVER_NAME} = require("../src/gyoza-git");
 
 describe('GyozaServer tests', () => {
 
@@ -8,6 +9,24 @@ describe('GyozaServer tests', () => {
             const response = server.handleRequest(method)
             expect(response.statusCode).toBe(405)
         })
+    })
+
+    test('headers should be formatted and have Server key', () => {
+        const headers = {
+            'cONTENT-lENGTH': 10,
+            true: false,
+            'string': 'hello world'
+        }
+        const server = new MockGyozaServer()
+        const response = server.handleRequest('', '', headers)
+        const actual = response.headers
+        const expected = {
+            'Content-Length': 10,
+            'True': false,
+            'String': 'hello world',
+            'Server': SERVER_NAME,
+        }
+        expect(actual).toEqual(expected)
     })
 
 })
