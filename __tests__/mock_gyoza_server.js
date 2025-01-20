@@ -53,3 +53,5 @@ class MockResponse {
     }
 
 }
+
+module.exports = { MockGyozaServer, MockResponse };
