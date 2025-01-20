@@ -13,6 +13,7 @@ class GyozaServer {
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
+        this.#port = port;
         http.createServer((request, response) =>
             this._handle_request(request, response))
             .listen(this.#port);
