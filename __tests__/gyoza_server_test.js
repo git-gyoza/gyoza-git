@@ -18,7 +18,7 @@ describe('GyozaServer tests', () => {
             'string': 'hello world'
         }
         const server = new MockGyozaServer()
-        const response = server.handleRequest('', '', headers)
+        const response = server.handleRequest('HEADERS', '', headers)
         const actual = response.headers
         const expected = {
             'Content-Length': 10,
@@ -54,8 +54,14 @@ class MockGyozaServer extends GyozaServer {
             'headers': headers,
         }
         const response = new MockResponse()
-        super._handleRequest(request, response)
+        this._handleRequest(request, response)
         return response
+    }
+
+    _handleRequest(request, response) {
+        if (request.method === 'HEADERS')
+            super._response(response, 200, null, request.headers)
+        else super._handleRequest(request, response)
     }
 
 }
