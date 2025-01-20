@@ -2,13 +2,13 @@ const GyozaServer = require('./../src/gyoza_server');
 
 /**
  * A mock for the actual {@link GyozaServer}.
- * Provides a {@link MockGyozaServer#handle_request}
+ * Provides a {@link MockGyozaServer#handleRequest}
  * method for testing purposes.
  */
 class MockGyozaServer extends GyozaServer {
 
     /**
-     * Makes the protected method {@link GyozaServer#_handle_request}
+     * Makes the protected method {@link GyozaServer#_handleRequest}
      * publicly available.
      *
      * @param method the request method ('GET' by default)
@@ -16,14 +16,14 @@ class MockGyozaServer extends GyozaServer {
      * @param headers the request headers (empty be default)
      * @returns {MockResponse} the response containing all the data sent
      */
-    handle_request(method = 'GET', path = '', headers = {}) {
+    handleRequest(method = 'GET', path = '', headers = {}) {
         const request = {
             'method': method,
             'url': path,
             'headers': headers,
         }
         const response = new MockResponse()
-        super._handle_request(request, response)
+        super._handleRequest(request, response)
         return response
     }
 
@@ -39,8 +39,8 @@ class MockResponse {
     body;
     ended = false;
 
-    writeHead(status_code, headers) {
-        this.status_code = status_code;
+    writeHead(statusCode, headers) {
+        this.status_code = statusCode;
         this.headers = headers;
     }
 

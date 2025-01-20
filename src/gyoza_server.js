@@ -8,14 +8,14 @@ class GyozaServer {
 
     /**
      * Starts a new {@link http} server.
-     * All the requests will be redirected to {@link GyozaServer#_handle_request}.
+     * All the requests will be redirected to {@link GyozaServer#_handleRequest}.
      *
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
         this.#port = port;
         http.createServer((request, response) =>
-            this._handle_request(request, response))
+            this._handleRequest(request, response))
             .listen(this.#port);
     }
 
@@ -29,7 +29,7 @@ class GyozaServer {
      * @param response the response object
      * @private
      */
-    _handle_request(request, response) {
+    _handleRequest(request, response) {
         const method = request.method;
         const path = request.url;
         const headers = request.headers;
@@ -140,13 +140,13 @@ class GyozaServer {
      * Sends a response to the client.
      *
      * @param response the response object
-     * @param status_code the HTTP status code to return
+     * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
      * @private
      */
-    _response(response, status_code, body = null, headers = {}) {
-        response.writeHead(status_code, headers);
+    _response(response, statusCode, body = null, headers = {}) {
+        response.writeHead(statusCode, headers);
         if (body != null) {
             if (body instanceof String) response.write(body)
             else response.write(JSON.stringify(body));
