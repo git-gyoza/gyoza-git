@@ -46,7 +46,7 @@ class GyozaServer {
             case 'DELETE':
                 return this._delete(path, headers, request, response);
             case 'HEAD':
-                return this._head(path, request, response);
+                return this._head(path, headers, request, response);
             default:
                 this._response(response, 405);
         }
