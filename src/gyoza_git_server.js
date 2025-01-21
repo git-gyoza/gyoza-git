@@ -74,7 +74,7 @@ class GitHTTPHandler extends HTTPHandler {
      * @private
      */
     _backend(error, service) {
-        if (error !== undefined) super._error(400, error)
+        if (error != null) super._error(400, error)
         else {
             const strippedPath = parseGitPath(this._path)
             super._log(`${this._remoteAddress} (${strippedPath}) => ${service.action}(${service.cmd})`)
