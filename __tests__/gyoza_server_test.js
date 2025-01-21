@@ -1,3 +1,5 @@
+const {PassThrough} = require('stream')
+
 const GyozaServer = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
@@ -45,15 +47,25 @@ class MockGyozaServer extends GyozaServer {
      * @param method the request method ('GET' by default)
      * @param path the request path ('' by default)
      * @param headers the request headers (empty be default)
+     * @param body the request body
      * @returns {MockResponse} the response containing all the data sent
      */
-    handleRequest(method = 'GET', path = '', headers = {}) {
+    handleRequest(method = 'GET', path = '', headers = {}, body = null) {
         const request = {
             'method': method,
             'url': path,
             'headers': headers,
             'connection': {
                 'remoteAddress': '127.0.0.1'
+            },
+            'body': new PassThrough(),
+
+            constructor() {
+                if (body != null) this.body.end(body)
+            },
+
+            read() {
+                return this.body.read()
             }
         }
         const response = new MockResponse()
@@ -69,7 +81,7 @@ class MockGyozaServer extends GyozaServer {
 
     _get(path, headers, request, response) {
         if (headers['Body'])
-            super._response(request, response, 200, request.read())
+            super._response(request, response, 200, request.read().toString())
         else super._get(path, headers, request, response)
     }
 
