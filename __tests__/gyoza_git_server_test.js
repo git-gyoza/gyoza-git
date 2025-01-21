@@ -1,3 +1,5 @@
+const {PassThrough} = require('stream')
+
 const {GyozaServerError} = require("../src/gyoza_server")
 const {parseGitPath, GitHTTPHandler} = require('../src/gyoza_git_server')
 
@@ -46,3 +48,23 @@ describe('GitHTTPHandler tests', () => {
     })
 
 })
+
+class MockGitHTTPHandler extends GitHTTPHandler {
+
+    constructor() {
+        super(mockRequest(), new MockResponseStream(), '.');
+    }
+
+    getResponse() {
+        return this._response
+    }
+
+    backend(error, service) {
+        super._backend(error, service)
+    }
+
+}
+
+class MockResponseStream extends PassThrough {
+
+}
