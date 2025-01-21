@@ -45,16 +45,15 @@ class GitHTTPHandler extends HTTPHandler {
     }
 
     _get() {
-        const directory = this.#repoDirectory
-        const gitBackend = backend(directory, this._backend)
-        this._request.pipe(gitBackend).pipe(this._responseStream)
+        const directory = this.#repoDirectory //TODO: needs better parsing
+        const gitBackend = backend(directory, (error, service) => this._backend(error, service))
+        this._requestStream.pipe(gitBackend).pipe(this._responseStream)
     }
 
     _backend(error, service) {
         if (error) {
             super._reply(400, {
-                error: error,
-                errorName: error.name,
+                error: error.message
             })
         }
     }
