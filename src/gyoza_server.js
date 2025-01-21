@@ -1,6 +1,6 @@
 const http = require('http')
 
-const { SERVER_NAME } = require("./gyoza-git")
+const {SERVER_NAME} = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
 const {decompress, compress} = require("./compression/compress");
 
@@ -61,6 +61,7 @@ class HTTPHandler {
     constructor(request, response) {
         this._request = request
         this._response = response
+        this._responseStream = this._response
 
         this._method = request.method
         this._path = request.url
@@ -174,18 +175,18 @@ class HTTPHandler {
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        const compressionData = compress(this._response, this._headers['Accept-Encoding'])
+        const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
         if (compressionData.encoding !== 'identity')
             headers['Content-Encoding'] = compressionData.encoding
-        this._response = compressionData.stream
+        this._responseStream = compressionData.stream
 
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
-            if (typeof body === 'string') this._response.write(body)
-            else this._response.write(JSON.stringify(body))
+            if (typeof body === 'string') this._responseStream.write(body)
+            else this._responseStream.write(JSON.stringify(body))
         }
-        this._response.end()
+        this._responseStream.end()
     }
 
     /**
