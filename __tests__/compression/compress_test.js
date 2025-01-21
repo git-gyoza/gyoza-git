@@ -6,41 +6,37 @@ const {CompressionError, compress, decompress} = require('../../src/compression/
 function compressData(data, encoding) {
     switch (encoding) {
         case 'gzip':
-            return zlib.gzipSync(data);
+            return zlib.gzipSync(data)
         case 'deflate':
-            return zlib.deflateSync(data);
+            return zlib.deflateSync(data)
         case 'br':
-            return zlib.brotliCompressSync(data);
+            return zlib.brotliCompressSync(data)
         default:
-            throw new CompressionError(encoding);
+            throw new CompressionError(encoding)
     }
 }
 
 function decompressData(data, encoding) {
     switch (encoding) {
         case 'gzip':
-            return zlib.gunzipSync(data);
+            return zlib.gunzipSync(data)
         case 'deflate':
-            return zlib.inflateSync(data);
+            return zlib.inflateSync(data)
         case 'br':
-            return zlib.brotliDecompressSync(data);
+            return zlib.brotliDecompressSync(data)
         case 'identity':
             return data
         default:
-            throw new CompressionError(encoding);
+            throw new CompressionError(encoding)
     }
-}
-
-function createReadableStream(buffer) {
-    return new PassThrough().end(buffer);
 }
 
 function readStreamContents(stream) {
     return new Promise((resolve, reject) => {
         let output = '';
-        stream.on('data', (chunk) => output += chunk.toString());
-        stream.on('end', () => resolve(output));
-        stream.on('error', (err) => reject(err));
+        stream.on('data', (chunk) => output += chunk)
+        stream.on('end', () => resolve(output))
+        stream.on('error', (err) => reject(err))
     });
 }
 
@@ -66,11 +62,11 @@ describe('tests for decompression', () => {
                 for (let e of encoding.split(', ').reverse())
                     data = compressData(data, e)
 
-            const stream = createReadableStream(data)
+            const stream = new PassThrough().end(data)
 
             const decompressed = decompress(stream, encoding)
             const output = await readStreamContents(decompressed)
-            expect(output).toBe(expected)
+            expect(output.toString()).toBe(expected)
         })
     });
 
