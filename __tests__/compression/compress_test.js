@@ -104,7 +104,7 @@ function decompressData(data, encoding) {
 
 function readStreamContents(stream) {
     return new Promise((resolve, reject) => {
-        let output = new Buffer(0)
+        let output = Buffer.alloc(0)
         stream.on('data', (chunk) =>
             output = Buffer.concat([output, Buffer.from(chunk)])
         )
