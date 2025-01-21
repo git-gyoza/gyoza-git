@@ -80,24 +80,32 @@ class HTTPHandler {
      * @private
      */
     handleRequest() {
-        this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
-        this._requestStream = decompress(this._request, this._headers['Content-Encoding'])
+        try {
+            this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
+            this._requestStream = decompress(this._request, this._headers['Content-Encoding'])
 
-        switch (this._method) {
-            case 'GET':
-                return this._get()
-            case 'POST':
-                return this._post()
-            case 'PUT':
-                return this._put()
-            case 'PATCH':
-                return this._patch()
-            case 'DELETE':
-                return this._delete()
-            case 'HEAD':
-                return this._head()
-            default:
-                this._reply(405)
+            switch (this._method) {
+                case 'GET':
+                    return this._get()
+                case 'POST':
+                    return this._post()
+                case 'PUT':
+                    return this._put()
+                case 'PATCH':
+                    return this._patch()
+                case 'DELETE':
+                    return this._delete()
+                case 'HEAD':
+                    return this._head()
+                default:
+                    this._reply(405)
+            }
+        } catch (error) {
+            const errorMessage = error.message
+            this._log(`Error while parsing request of ${this._remoteAddress}(${this._method} ${this._path}): ${errorMessage}`)
+            this._reply(400, {
+                'error': errorMessage
+            })
         }
     }
 
