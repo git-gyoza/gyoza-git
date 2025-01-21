@@ -21,7 +21,7 @@ function decompress(stream, encoding) {
     if (encoding == null || encoding.trim().length === 0) return stream
     else try {
         const split = encoding.replace(' ', '').split(',')
-        stream = stream.pipe(new CompressionStream(split[0]))
+        stream = stream.pipe(new DecompressionStream(split[0]))
         if (split.length === 1) return stream
         else return decompress(stream, split.slice(1).join(','))
     } catch (TypeError) {
