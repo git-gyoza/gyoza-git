@@ -184,22 +184,37 @@ class HTTPHandler {
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
-        headers['Server'] = SERVER_NAME
 
-        if (statusCode !== 400) {
+        try {
             const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
             if (compressionData.encoding !== 'identity')
                 headers['Content-Encoding'] = compressionData.encoding
             this._responseStream = compressionData.stream
+        } catch (error) {
+            this._error(400, error)
+            return
         }
 
+        this.#write(statusCode, headers, body)
+        if (terminate) this._responseStream.end()
+    }
+
+    /**
+     * Writes to the response stream the given data.
+     *
+     * @param statusCode the status code
+     * @param headers an object representing the headers
+     * @param body if is not null, if the body is a string then it will be returned as is.
+     *             Otherwise, it will be wrapped in JSON
+     */
+    #write(statusCode, headers, body) {
+        headers['Server'] = SERVER_NAME
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
             if (typeof body === 'string') this._responseStream.write(body)
             else this._responseStream.write(JSON.stringify(body))
         }
-        if (terminate) this._responseStream.end()
     }
 
     /**
