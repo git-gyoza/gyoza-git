@@ -166,6 +166,19 @@ class GyozaServer {
         response.end()
     }
 
+    /**
+     * Properly logs the given message to standard output.
+     *
+     * @param message the message
+     * @private
+     */
+    _log(message) {
+        let now = new Date()
+        now = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+
+        console.log(`[${now}] - ${message}`)
+    }
+
 }
 
 module.exports = GyozaServer
