@@ -60,7 +60,13 @@ class GitHTTPHandler extends HTTPHandler {
         else GyozaServerError.invalidDirectory(repoDirectory)
     }
 
-    _get() {
+    _get = this._run_backend
+    _post = this._run_backend
+    _put = this._run_backend
+    _patch = this._run_backend
+    _head = this._run_backend
+
+    _run_backend() {
         const gitBackend = backend(this._path, (error, service) => this._backend(error, service))
         this._requestStream.pipe(gitBackend).pipe(this._responseStream)
     }
