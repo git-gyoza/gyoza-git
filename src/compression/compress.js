@@ -5,7 +5,34 @@ const Encoder = require('./encoding')
  */
 class CompressionError extends Error {
     constructor(encoding) {
-        super(`Unsupported encoding: ${encoding}`);
+        super(`Unsupported encoding: ${encoding}`)
+    }
+}
+
+/**
+ * Finds the most appropriate compression method from the given encodings
+ * and compresses the stream.
+ *
+ * @param stream the stream to compress
+ * @param acceptedEncoding a string of accepted encodings separated by ', '
+ * @returns {{encoding, stream}|*} the chosen encoding and the compressed stream
+ */
+function compress(stream, acceptedEncoding) {
+    if (acceptedEncoding == null || acceptedEncoding.trim().length === 0) return stream
+    else {
+        const acceptedEncodings = acceptedEncoding.replace(' ', '').split(',')
+
+        let encoder = undefined
+        for (let i = 0; i < acceptedEncodings.length && encoder === undefined; i++)
+            encoder = Object.values(Encoder).filter((e) => e.name === acceptedEncodings[i])[0]
+
+        if (encoder === undefined) throw new CompressionError(acceptedEncoding)
+        else stream = stream.pipe(encoder.compressionStream())
+
+        return {
+            encoding: encoder.name,
+            stream: stream
+        }
     }
 }
 
@@ -34,4 +61,4 @@ function decompress(stream, encoding) {
     }
 }
 
-module.exports = { CompressionError, decompress }
+module.exports = { CompressionError, compress, decompress }
