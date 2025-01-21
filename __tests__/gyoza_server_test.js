@@ -14,6 +14,8 @@ describe('HTTPHandler tests', () => {
         test('request stream should be decompressed', () => {
             const expected = 'Hello, World!'
             let buffer = Buffer.from(expected)
+            if (encoding != null && encoding.length > 0 && encoding !== 'identity')
+                buffer = compressData(buffer, encoding)
             const handler = new MockHTTPHandler('GET', '', {
                 'Content-Encoding': encoding,
                 'Body': true
