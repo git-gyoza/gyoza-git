@@ -89,4 +89,4 @@ class GitHTTPHandler extends HTTPHandler {
 
 }
 
-module.exports = {GyozaGitServer, parseGitPath}
+module.exports = {GyozaGitServer, GitHTTPHandler, parseGitPath}
