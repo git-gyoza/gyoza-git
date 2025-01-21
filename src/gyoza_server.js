@@ -36,22 +36,67 @@ class GyozaServer {
     }
 
     /**
+     * Delegates the handling of an HTTP request
+     * to a new HTTPHandler.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @returns {HTTPHandler} the handler
+     * @private
+     */
+    _handleRequest(request, response) {
+        return new HTTPHandler(request, response)
+    }
+
+}
+
+/**
+ * A Handler for HTTP requests sent from a client.
+ */
+class HTTPHandler {
+    #request
+    #response
+
+    #method
+    #path
+    #headers
+
+    #clientIp
+
+    /**
+     * Instantiates a new HTTPHandler.
+     *
+     * @param request the request object
+     * @param response the response object
+     */
+    constructor(request, response) {
+        this.#request = request
+        this.#response = response
+
+        this.#method = request.method
+        this.#path = request.url
+        this.#headers = request.headers
+
+        this.#clientIp = getIp(request)
+    }
+
+    /**
      * Handles all the incoming requests accordingly by redirecting each
      * request to the most appropriate method using the sent HTTP method.
      * If an unrecognized method is used, a 405 'Method Not Allowed' message
      * will be returned.
      *
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _handleRequest(request, response) {
-        const method = request.method
-        const path = request.url
-        const headers = request.headers
+    handleRequest() {
+        const request = this.#request
+        const response = this.#response
+        const method = this.#method
+        const path = this.#path
+        const headers = this.#headers
 
-        this._log(`${getIp(request)} -> ${method} ${path}`)
-        request = decompress(request, headers['Content-Encoding'])
+        this._log(`${this.#clientIp} -> ${method} ${path}`)
+        this.request = decompress(this.request, headers['Content-Encoding'])
 
         switch (method) {
             case 'GET':
@@ -158,27 +203,25 @@ class GyozaServer {
     /**
      * Sends a response to the client.
      *
-     * @param request the request object
-     * @param response the response object
      * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
      * @private
      */
-    _response(request, response, statusCode, body = null, headers = {}) {
+    _response(statusCode, body = null, headers = {}) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        response.writeHead(statusCode, headers)
-        this._log(`${getIp(request)} <- ${statusCode}`)
+        this.#response.writeHead(statusCode, headers)
+        this._log(`${this.#clientIp} <- ${statusCode}`)
         if (body != null) {
-            if (body instanceof String) response.write(body)
-            else response.write(JSON.stringify(body))
+            if (body instanceof String) this.#response.write(body)
+            else this.#response.write(JSON.stringify(body))
         }
-        response.end()
+        this.#response.end()
     }
 
     /**
