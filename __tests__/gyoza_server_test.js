@@ -7,6 +7,17 @@ const {decompressData, compressData, readStreamContents} = require('./compressio
 
 describe('GyozaServer tests', () => {
 
+    test('should reset all variables after stopping', () => {
+        const server = new MockServer()
+        const port = 12345
+        server.start(port)
+        expect(server.getPort()).toBe(port)
+        expect(server.getInternalServer()).not.toBe(undefined)
+        server.stop()
+        expect(server.getPort()).toBe(undefined)
+        expect(server.getInternalServer()).toBe(undefined)
+    })
+
     test('should throw error when starting already started server', () => {
         const server = new GyozaServer()
         server.start()
@@ -22,6 +33,18 @@ describe('GyozaServer tests', () => {
     })
 
 })
+
+class MockServer extends GyozaServer {
+
+    getPort() {
+        return this._port
+    }
+
+    getInternalServer() {
+        return this._internalServer
+    }
+
+}
 
 describe('HTTPHandler tests', () => {
 
