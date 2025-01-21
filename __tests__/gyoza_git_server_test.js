@@ -77,6 +77,10 @@ class MockGitHTTPHandler extends GitHTTPHandler {
         super._backend(error, service)
     }
 
+    _log(message) {
+        // Prevents useless logging
+    }
+
 }
 
 class MockResponseStream extends PassThrough {
