@@ -1,9 +1,9 @@
 const {PassThrough} = require('stream')
 
-const {GyozaServer, GyozaServerError, HTTPHandler} = require("../src/gyoza_server")
-const {SERVER_NAME} = require("../src/gyoza-git")
+const {GyozaServer, GyozaServerError, HTTPHandler} = require("../../src/server/gyoza_server")
+const {SERVER_NAME} = require("../../src/gyoza-git")
 
-const {decompressData, compressData, readStreamContents} = require('./compression/compress_test')
+const {decompressData, compressData, readStreamContents} = require('../compression/compress_test')
 
 describe('GyozaServer tests', () => {
 

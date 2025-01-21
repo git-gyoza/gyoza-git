@@ -1,9 +1,9 @@
 const http = require('http')
 const {PassThrough} = require('stream')
 
-const {GyozaServerError, GyozaServer} = require("../src/gyoza_server")
-const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../src/gyoza_git_server')
-const {readStreamContents} = require("./compression/compress_test");
+const {GyozaServerError, GyozaServer} = require("../../src/server/gyoza_server")
+const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../../src/server/gyoza_git_server')
+const {readStreamContents} = require("../compression/compress_test");
 
 function makeGETRequest(options) {
     return new Promise((resolve, reject) => {

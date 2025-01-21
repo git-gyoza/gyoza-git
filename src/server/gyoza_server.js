@@ -1,8 +1,8 @@
 const http = require('http')
 
-const {SERVER_NAME} = require("./gyoza-git")
-const capitalizeFully = require('./string_utils')
-const {decompress, compress} = require("./compression/compress");
+const {SERVER_NAME} = require("../gyoza-git")
+const capitalizeFully = require('../string_utils')
+const {decompress, compress} = require("../compression/compress");
 
 /**
  * Gets the client IP from the given request.
