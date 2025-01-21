@@ -8,6 +8,27 @@ const {decompressData, compressData, readStreamContents} = require('./compressio
 describe('HTTPHandler tests', () => {
 
     [
+        [undefined, 'identity', undefined],
+        [null, 'identity', undefined],
+        ['', 'identity', undefined],
+        ['identity', 'identity', undefined],
+    ].forEach(a => supportResponseStreamDecoding(a[0], a[1], a[2]))
+    function supportResponseStreamDecoding(acceptedEncoding, encoding, encodingHeader) {
+        test(`response stream should be encoded to ${encoding} (Content-Encoding: ${encodingHeader}, Accept-Encoding: ${acceptedEncoding})`, async () => {
+            const handler = new MockHTTPHandler('GET', 'hello', {
+                'Accept-Encoding': acceptedEncoding
+            })
+            handler.handleRequest()
+
+            const decompressedResponse = handler.getResponse()
+            let output = await readStreamContents(decompressedResponse)
+            output = decompressData(output, encoding)
+
+            expect(output.toString()).toBe('World!')
+        })
+    }
+
+    [
         'identity', 'gzip',
         'deflate', 'br',
         'gzip, deflate, br, identity'
@@ -85,13 +106,15 @@ class MockHTTPHandler extends HTTPHandler {
     }
 
     handleRequest() {
-        if (this._request.method === 'HEADERS')
-            super._reply(200, null, this._request.headers)
+        if (this._method === 'HEADERS')
+            super._reply(200, null, this._headers)
         else super.handleRequest()
     }
 
     _get() {
-        super._get()
+        if (this._path === 'hello')
+            super._reply(200, 'World!')
+        else super._get()
     }
 
     _log(message) {
