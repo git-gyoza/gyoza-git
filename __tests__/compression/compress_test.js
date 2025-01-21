@@ -1,7 +1,7 @@
 const zlib = require('zlib');
 const {PassThrough} = require('stream');
 
-const {CompressionError, decompress} = require('../../src/compression/compress')
+const {CompressionError, compress, decompress} = require('../../src/compression/compress')
 
 function compressData(data, encoding) {
     switch (encoding) {
@@ -11,6 +11,21 @@ function compressData(data, encoding) {
             return zlib.deflateSync(data);
         case 'br':
             return zlib.brotliCompressSync(data);
+        default:
+            throw new CompressionError(encoding);
+    }
+}
+
+function decompressData(data, encoding) {
+    switch (encoding) {
+        case 'gzip':
+            return zlib.gunzipSync(data);
+        case 'deflate':
+            return zlib.inflateSync(data);
+        case 'br':
+            return zlib.brotliDecompressSync(data);
+        case 'identity':
+            return data
         default:
             throw new CompressionError(encoding);
     }
@@ -28,6 +43,14 @@ function readStreamContents(stream) {
         stream.on('error', (err) => reject(err));
     });
 }
+
+describe('tests for compression', () => {
+    ['invalid'].forEach((encoding) => {
+        test(`should throw error on invalid encoding ${encoding}`, () => {
+            expect(() => compress(new PassThrough(), encoding)).toThrow(CompressionError)
+        })
+    });
+})
 
 describe('tests for decompression', () => {
 
