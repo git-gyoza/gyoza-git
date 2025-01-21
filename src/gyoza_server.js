@@ -39,9 +39,6 @@ class GyozaServerError extends Error {
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
-    #newHTTPHandler
-    #port
-    #internalServer
 
     /**
      * Instantiates a new Gyoza server.
@@ -49,7 +46,7 @@ class GyozaServer {
      * @param newHTTPHandler a callback responsible for creating a custom HTTPHandler.
      */
     constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
-        this.#newHTTPHandler = newHTTPHandler
+        this._newHTTPHandler = newHTTPHandler
     }
 
     /**
@@ -63,12 +60,12 @@ class GyozaServer {
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
-        if (this.#internalServer !== undefined) GyozaServerError.alreadyStarted(port)
+        if (this._internalServer !== undefined) GyozaServerError.alreadyStarted(port)
         else {
-            this.#port = port
-            this.#internalServer = http.createServer((request, response) =>
-                this.#newHTTPHandler(request, response).handleRequest())
-            this.#internalServer.listen(this.#port)
+            this._port = port
+            this._internalServer = http.createServer((request, response) =>
+                this._newHTTPHandler(request, response).handleRequest())
+            this._internalServer.listen(this._port)
         }
     }
 
@@ -79,10 +76,10 @@ class GyozaServer {
      * is thrown.
      */
     stop() {
-        if (this.#internalServer !== undefined) {
-            this.#internalServer.close()
-            this.#port = undefined
-            this.#internalServer = undefined
+        if (this._internalServer !== undefined) {
+            this._internalServer.close()
+            this._port = undefined
+            this._internalServer = undefined
         } else GyozaServerError.notStarted()
     }
 
