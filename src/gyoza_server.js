@@ -186,10 +186,16 @@ class GyozaServer {
      * @private
      */
     _log(message) {
-        let now = new Date()
-        now = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+        const formatNumber = (number) => {
+            let string = number.toString()
+            return (string.length === 1 ? '0' : '') + string;
+        }
 
-        console.log(`[${now}] - ${message}`)
+        const now = new Date()
+        let dateFormat = `${formatNumber(now.getDay())}-${formatNumber(now.getMonth() + 1)}-${now.getFullYear()} `
+        dateFormat += `${formatNumber(now.getHours())}:${formatNumber(now.getMinutes())}:${formatNumber(now.getSeconds())}`
+
+        console.log(`[${dateFormat}] - ${message}`)
     }
 
 }
