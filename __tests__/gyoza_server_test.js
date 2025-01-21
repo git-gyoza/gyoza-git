@@ -52,6 +52,9 @@ class MockGyozaServer extends GyozaServer {
             'method': method,
             'url': path,
             'headers': headers,
+            'connection': {
+                'remoteAddress': '127.0.0.1'
+            }
         }
         const response = new MockResponse()
         this._handleRequest(request, response)
