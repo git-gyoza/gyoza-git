@@ -27,5 +27,10 @@ module.exports = {
     GZIP: new Encoder('gzip', zlib.createGzip, zlib.createGunzip),
     DEFLATE: new Encoder('deflate', zlib.createDeflate, zlib.createInflate),
     BROTLI: new Encoder('br', zlib.createBrotliCompress, zlib.createBrotliDecompress),
-    IDENTITY: new Encoder('identity', () => new PassThrough(), () => new PassThrough())
+    IDENTITY: new Encoder('identity', () => new PassThrough(), () => new PassThrough()),
+
+    valueOf(name) {
+        return Object.values(this).filter((e) => e.name === name)[0]
+    }
+
 }
