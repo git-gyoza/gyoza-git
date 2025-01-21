@@ -2,6 +2,7 @@ const http = require('http')
 
 const { SERVER_NAME } = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
+const {decompress} = require("./compression/compress");
 
 /**
  * Gets the client IP from the given request.
@@ -50,6 +51,7 @@ class GyozaServer {
         const headers = request.headers
 
         this._log(`${getIp(request)} -> ${method} ${path}`)
+        request = decompress(request, headers['Content-Encoding'])
 
         switch (method) {
             case 'GET':
