@@ -33,8 +33,8 @@ function decompressData(data, encoding) {
 
 function readStreamContents(stream) {
     return new Promise((resolve, reject) => {
-        let output = '';
-        stream.on('data', (chunk) => output += chunk)
+        let output
+        stream.on('data', (chunk) => output = chunk)
         stream.on('end', () => resolve(output))
         stream.on('error', (err) => reject(err))
     });
