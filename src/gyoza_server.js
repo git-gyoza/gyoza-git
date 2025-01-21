@@ -34,7 +34,7 @@ class GyozaServerError extends Error {
     }
 
     static invalidDirectory(repoDirectory) {
-        throw new GyozaServerError(`Could not find directory '${repoDirectory}'`)
+        throw new GyozaServerError(`Could not find or invalid directory: ${repoDirectory}`)
     }
 
 }
