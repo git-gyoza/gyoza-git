@@ -67,6 +67,12 @@ class MockGyozaServer extends GyozaServer {
         else super._handleRequest(request, response)
     }
 
+    _get(path, headers, request, response) {
+        if (headers['Body'])
+            super._response(request, response, 200, request.read())
+        else super._get(path, headers, request, response)
+    }
+
 }
 
 /**
@@ -94,4 +100,4 @@ class MockResponse {
 
 }
 
-module.exports = { MockGyozaServer, MockResponse }
+module.exports = {MockGyozaServer, MockResponse}
