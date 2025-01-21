@@ -54,6 +54,19 @@ describe('HTTPHandler tests', () => {
         })
     });
 
+    test('request stream of undefined coding should return error', async () => {
+        const handler = new MockHTTPHandler('GET', '', {
+            'Content-Encoding': 'not_existing'
+        })
+        handler.handleRequest()
+        const response = handler.getResponse()
+        const output = await readStreamContents(response)
+        expect(response.statusCode).toEqual(400)
+        expect(output.toString()).toEqual(JSON.stringify({
+            'error': 'Unsupported encoding: not_existing'
+        }))
+    });
+
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
             const handler = new MockHTTPHandler()
