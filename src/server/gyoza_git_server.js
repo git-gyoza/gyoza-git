@@ -2,6 +2,7 @@ const fs = require('fs')
 const backend = require('git-http-backend')
 const spawn = require('child_process').spawn
 
+const {DEFAULT_PORT} = require('../../src/gyoza-git')
 const StatusCode = require('../status_codes')
 const {GyozaServer, HTTPHandler, GyozaServerError} = require('./gyoza_server')
 
@@ -36,7 +37,7 @@ class GyozaGitServer extends GyozaServer {
         else GyozaServerError.invalidDirectory(repoDirectory)
     }
 
-    start(port = 21125) {
+    start(port = DEFAULT_PORT) {
         console.log(`Starting gyoza-git server on port ${port} with repositories directory: ${this.#repoDirectory}`)
         super.start(port)
     }

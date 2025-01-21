@@ -1,6 +1,7 @@
 const http = require('http')
 const {PassThrough} = require('stream')
 
+const {DEFAULT_PORT} = require('../../src/gyoza-git')
 const StatusCode = require('../../src/status_codes')
 const {GyozaServerError, GyozaServer} = require("../../src/server/gyoza_server")
 const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../../src/server/gyoza_git_server')
@@ -33,7 +34,7 @@ describe('GyozaGitServer integration tests', () => {
 
         const response = await makeGETRequest({
             hostname: 'localhost',
-            port: 21125,
+            port: DEFAULT_PORT,
             path: '/info/refs?service=git-upload-pack',
             method: 'GET'
         })

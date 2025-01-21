@@ -1,6 +1,6 @@
 const http = require('http')
 
-const {SERVER_NAME} = require('../gyoza-git')
+const {SERVER_NAME, DEFAULT_PORT} = require('../gyoza-git')
 const StatusCode = require('../status_codes')
 const capitalizeFully = require('../string_utils')
 const {decompress, compress} = require('../compression/compress');
@@ -66,7 +66,7 @@ class GyozaServer {
      *
      * @param port the port where the server will be run on
      */
-    start(port = 21125) {
+    start(port = DEFAULT_PORT) {
         if (this._internalServer != null) GyozaServerError.alreadyStarted(port)
         else {
             this._port = port
