@@ -2,6 +2,7 @@ const fs = require('fs')
 const backend = require('git-http-backend')
 const spawn = require('child_process').spawn
 
+const StatusCode = require('../status_codes')
 const {GyozaServer, HTTPHandler, GyozaServerError} = require('./gyoza_server')
 
 /**
@@ -81,16 +82,16 @@ class GitHTTPHandler extends HTTPHandler {
      * @private
      */
     _backend(error, service) {
-        if (error != null) super._error(400, error)
+        if (error != null) super._error(StatusCode.BAD_REQUEST, error)
         else {
             const strippedPath = parseGitPath(this._path)
             const actualDirectory = `${this.#repoDirectory}${strippedPath}`
             if (!fs.existsSync(actualDirectory) || !fs.lstatSync(actualDirectory).isDirectory())
-                super._error(404, `Could not find repository ${strippedPath}`)
+                super._error(StatusCode.NOT_FOUND, `Could not find repository ${strippedPath}`)
             else {
                 super._log(`${this._remoteAddress} (${strippedPath}) => ${service.action}(${service.cmd})`)
 
-                super._reply(200, null, {
+                super._reply(StatusCode.OK, null, {
                     'Content-Type': service.type
                 }, false)
 

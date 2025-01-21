@@ -1,8 +1,9 @@
 const http = require('http')
 
-const {SERVER_NAME} = require("../gyoza-git")
+const {SERVER_NAME} = require('../gyoza-git')
+const StatusCode = require('../status_codes')
 const capitalizeFully = require('../string_utils')
-const {decompress, compress} = require("../compression/compress");
+const {decompress, compress} = require('../compression/compress');
 
 /**
  * Gets the client IP from the given request.
@@ -148,10 +149,10 @@ class HTTPHandler {
                     this._head()
                     break
                 default:
-                    this._reply(405)
+                    this._reply(StatusCode.METHOD_NOT_ALLOWED)
             }
         } catch (error) {
-            this._error(400, error)
+            this._error(StatusCode.BAD_REQUEST, error)
         }
     }
 
@@ -162,7 +163,7 @@ class HTTPHandler {
      * @private
      */
     _get() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -172,7 +173,7 @@ class HTTPHandler {
      * @private
      */
     _post() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -182,7 +183,7 @@ class HTTPHandler {
      * @private
      */
     _put() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -192,7 +193,7 @@ class HTTPHandler {
      * @private
      */
     _patch() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -202,7 +203,7 @@ class HTTPHandler {
      * @private
      */
     _delete() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -212,7 +213,7 @@ class HTTPHandler {
      * @private
      */
     _head() {
-        this._reply(405)
+        this._reply(StatusCode.METHOD_NOT_ALLOWED)
     }
 
     /**
@@ -236,7 +237,7 @@ class HTTPHandler {
                 headers['Content-Encoding'] = compressionData.encoding
             this._responseStream = compressionData.stream
         } catch (error) {
-            this._error(400, error)
+            this._error(StatusCode.BAD_REQUEST, error)
             return
         }
 
