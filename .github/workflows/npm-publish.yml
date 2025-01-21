@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+      - run: npm install
       - run: npm test
 
   coverage-badge:
@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v3
       # Necessary to generate the coverage report.
       # Make sure to add 'json-summary' to the coverageReporters in jest options
-      - run: npm ci
+      - run: npm install
       - name: Tests
         run: npm test
       - name: Generating coverage badges
@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
+      - run: npm install
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
