@@ -5,16 +5,21 @@ const {SERVER_NAME} = require("../src/gyoza-git")
 
 describe('HTTPHandler tests', () => {
 
-    test('request stream should be decompressed', () => {
-        const expected = 'Hello, World!'
-        let buffer = Buffer.from(expected)
-        const handler = new MockHTTPHandler('GET', '', {
-            'Content-Encoding': 'identity',
-            'Body': true
-        }, buffer)
-        handler.handleRequest()
-        const response = handler.getResponse()
-        expect(response.body).toBe(expected)
+    [
+        undefined, null,
+        '', 'identity'
+    ].forEach((encoding) => {
+        test('request stream should be decompressed', () => {
+            const expected = 'Hello, World!'
+            let buffer = Buffer.from(expected)
+            const handler = new MockHTTPHandler('GET', '', {
+                'Content-Encoding': encoding,
+                'Body': true
+            }, buffer)
+            handler.handleRequest()
+            const response = handler.getResponse()
+            expect(response.body).toBe(expected)
+        })
     });
 
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
