@@ -51,11 +51,7 @@ class GitHTTPHandler extends HTTPHandler {
     }
 
     _backend(error, service) {
-        if (error) {
-            super._reply(400, {
-                error: error.message
-            })
-        }
+        if (error) super._error(400, error)
     }
 
 }
