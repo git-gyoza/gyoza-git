@@ -200,12 +200,28 @@ class HTTPHandler {
     }
 
     /**
+     * An alias for {@link #_reply} that signals an error coming from
+     * either the client or the server.
+     *
+     * @param statusCode the status code
+     * @param error the error. If it is an instance of {@link Error}, then
+     *              the error message will be passed to the body
+     * @private
+     */
+    _error(statusCode, error = 'Unknown error') {
+        if (error instanceof Error) error = error.message
+        this.#write(statusCode, {}, {'error': error})
+        this._responseStream.end()
+    }
+
+    /**
      * Writes to the response stream the given data.
      *
      * @param statusCode the status code
      * @param headers an object representing the headers
      * @param body if is not null, if the body is a string then it will be returned as is.
      *             Otherwise, it will be wrapped in JSON
+     * @private
      */
     #write(statusCode, headers, body) {
         headers['Server'] = SERVER_NAME
