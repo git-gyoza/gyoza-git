@@ -12,6 +12,10 @@ describe('HTTPHandler tests', () => {
         [null, 'identity', undefined],
         ['', 'identity', undefined],
         ['identity', 'identity', undefined],
+        ['gzip', 'gzip', 'gzip'],
+        ['deflate', 'deflate', 'deflate'],
+        ['br', 'br', 'br'],
+        ['gzip, deflate, br', 'gzip', 'gzip']
     ].forEach(a => supportResponseStreamDecoding(a[0], a[1], a[2]))
     function supportResponseStreamDecoding(acceptedEncoding, encoding, encodingHeader) {
         test(`response stream should be encoded to ${encoding} (Content-Encoding: ${encodingHeader}, Accept-Encoding: ${acceptedEncoding})`, async () => {
