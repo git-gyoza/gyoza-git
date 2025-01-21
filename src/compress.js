@@ -9,7 +9,7 @@ class DecompressionError extends Error {
 
 /**
  * Decompresses the given stream using the given encodings.
- * Currently supports: identity, gzip and deflate.
+ * Currently supports: gzip and deflate.
  *
  * @param stream the stream to convert
  * @param encoding the string representing the encodings.

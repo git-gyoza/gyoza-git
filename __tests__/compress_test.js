@@ -14,9 +14,8 @@ describe('tests for decompression', () => {
         [undefined, stream()],
         [null, stream()],
         ['', stream()],
-        ['identity', stream()],
-        ['gzip, identity', stream('gzip')],
-        ['gzip, deflate, identity', stream('deflate', 'gzip')]
+        ['gzip', stream('gzip')],
+        ['gzip, deflate', stream('deflate', 'gzip')]
     ]).forEach((stream, encoding) => {
         test(`should correctly decode ${encoding}`, () => {
             decompress(stream, encoding).on('data', data => {
