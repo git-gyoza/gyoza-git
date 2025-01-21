@@ -24,6 +24,7 @@ describe('HTTPHandler tests', () => {
             let output = await readStreamContents(compressedResponse)
             output = decompressData(output, encoding)
 
+            expect(handler.getResponse().headers['Content-Encoding']).toBe(encodingHeader)
             expect(output.toString()).toBe('World!')
         })
     }
@@ -99,6 +100,10 @@ class MockHTTPHandler extends HTTPHandler {
 
     getRequest() {
         return this._request
+    }
+
+    getResponse() {
+        return this._response
     }
 
     getResponseStream() {
