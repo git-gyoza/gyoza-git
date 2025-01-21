@@ -22,6 +22,7 @@ function getIp(request) {
 class GyozaServer {
     #port
     #newHTTPHandler
+    #internalServer
 
     /**
      * Instantiates a new Gyoza server.
@@ -41,9 +42,16 @@ class GyozaServer {
      */
     start(port = 21125) {
         this.#port = port
-        http.createServer((request, response) =>
+        this.#internalServer = http.createServer((request, response) =>
             this.#newHTTPHandler(request, response).handleRequest())
-            .listen(this.#port)
+        this.#internalServer.listen(this.#port)
+    }
+
+    /**
+     * Stops the previously started {@link http} server.
+     */
+    stop() {
+        this.#internalServer.close()
     }
 
 }
