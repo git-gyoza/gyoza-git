@@ -45,8 +45,8 @@ class GitHTTPHandler extends HTTPHandler {
     }
 
     _get() {
-        const directory = this.#repoDirectory //TODO: needs better parsing
-        const gitBackend = backend(directory, (error, service) => this._backend(error, service))
+        const repositoryDirectory = this.#repoDirectory + this._path.split('/')[1] //TODO: needs better parsing
+        const gitBackend = backend(repositoryDirectory, (error, service) => this._backend(error, service))
         this._requestStream.pipe(gitBackend).pipe(this._responseStream)
     }
 
@@ -60,4 +60,4 @@ class GitHTTPHandler extends HTTPHandler {
 
 }
 
-new GyozaGitServer('/home/smith/gitserver/falafel').start()
+new GyozaGitServer('/home/smith/gitserver/').start()
