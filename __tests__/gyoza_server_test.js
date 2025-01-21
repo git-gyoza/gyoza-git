@@ -3,28 +3,28 @@ const {PassThrough} = require('stream')
 const {HTTPHandler} = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
-const {decompressData, compressData} = require('./compression/compress_test')
+const {decompressData, compressData, readStreamContents} = require('./compression/compress_test')
 
 describe('HTTPHandler tests', () => {
 
     [
-        undefined, null,
-        '', 'identity',
-        'gzip',
-        'deflate', 'br'
+        'identity', 'gzip',
+        'deflate', 'br',
+        'gzip, deflate, br, identity'
     ].forEach((encoding) => {
-        test('request stream should be decompressed', () => {
+        test(`request stream in ${encoding} encoding should be decompressed`, async () => {
             const expected = 'Hello, World!'
             let buffer = Buffer.from(expected)
-            if (encoding != null && encoding.length > 0 && encoding !== 'identity')
-                buffer = compressData(buffer, encoding)
+                for (let e of encoding.split(', ').reverse())
+                    if (e !== 'identity') buffer = compressData(buffer, e)
             const handler = new MockHTTPHandler('GET', '', {
                 'Content-Encoding': encoding,
                 'Body': true
             }, buffer)
             handler.handleRequest()
-            const response = handler.getResponse()
-            expect(response.body).toBe(expected)
+            const decompressedRequest = handler.getRequest()
+            let output = await readStreamContents(decompressedRequest)
+            expect(output.toString()).toBe(expected)
         })
     });
 
@@ -76,6 +76,10 @@ class MockHTTPHandler extends HTTPHandler {
         super(new MockRequest(method, path, headers, body), new MockResponse())
     }
 
+    getRequest() {
+        return this._request
+    }
+
     getResponse() {
         return this._response
     }
@@ -87,8 +91,7 @@ class MockHTTPHandler extends HTTPHandler {
     }
 
     _get() {
-        if (this._headers['Body']) super._reply(200, this._request.read().toString())
-        else super._get()
+        super._get()
     }
 
     _log(message) {

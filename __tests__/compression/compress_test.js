@@ -111,4 +111,4 @@ function readStreamContents(stream) {
     })
 }
 
-module.exports = {decompressData, compressData}
+module.exports = {decompressData, compressData, readStreamContents}
