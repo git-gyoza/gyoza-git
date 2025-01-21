@@ -146,9 +146,10 @@ class GyozaServer {
      * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
+     * @param terminate if true, will close the response stream
      * @private
      */
-    _response(response, statusCode, body = null, headers = {}) {
+    _response(response, statusCode, body = null, headers = {}, terminate = true) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
@@ -160,7 +161,7 @@ class GyozaServer {
             if (body instanceof String) response.write(body)
             else response.write(JSON.stringify(body))
         }
-        response.end()
+        if (terminate) response.end()
     }
 
 }
