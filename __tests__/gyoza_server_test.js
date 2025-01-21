@@ -16,7 +16,7 @@ describe('HTTPHandler tests', () => {
             const expected = 'Hello, World!'
             let buffer = Buffer.from(expected)
                 for (let e of encoding.split(', ').reverse())
-                    if (e !== 'identity') buffer = compressData(buffer, e)
+                    buffer = compressData(buffer, e)
             const handler = new MockHTTPHandler('GET', '', {
                 'Content-Encoding': encoding,
                 'Body': true

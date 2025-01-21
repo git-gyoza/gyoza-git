@@ -80,6 +80,8 @@ function compressData(data, encoding) {
             return zlib.deflateSync(data)
         case 'br':
             return zlib.brotliCompressSync(data)
+        case 'identity':
+            return data
         default:
             throw new CompressionError(encoding)
     }
