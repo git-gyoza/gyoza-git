@@ -1,6 +1,6 @@
 const {PassThrough} = require('stream')
 
-const {GyozaServerError} = require("../src/gyoza_server")
+const {GyozaServerError, GyozaServer} = require("../src/gyoza_server")
 const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../src/gyoza_git_server')
 const {readStreamContents} = require("./compression/compress_test");
 
@@ -35,6 +35,17 @@ describe('parseGitPath tests', () => {
 })
 
 describe('GyozaGitServer tests', () => {
+
+    test('start should call on super', () => {
+        const server = new GyozaGitServer('.')
+        const start = jest.spyOn(GyozaServer.prototype, 'start')
+        const port = 18591
+
+        server.start(port)
+        server.stop()
+
+        expect(start).toHaveBeenCalledWith(port)
+    });
 
     [__dirname, '.', '../'].forEach((directory) => {
         test(`should not throw on repositories directory: ${directory}`, () => {
