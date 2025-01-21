@@ -50,7 +50,7 @@ class GyozaServer {
      *
      * @param newHTTPHandler a callback responsible for creating a custom HTTPHandler.
      */
-    constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
+    constructor(newHTTPHandler) {
         this._newHTTPHandler = newHTTPHandler
         this._port = null
         this._internalServer = null
