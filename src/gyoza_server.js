@@ -36,6 +36,9 @@ class GyozaServer {
         const method = request.method
         const path = request.url
         const headers = request.headers
+        let ip = request.connection.remoteAddress
+        ip = ip.split(':')
+        ip = ip[ip.length - 1]
 
         switch (method) {
             case 'GET':
