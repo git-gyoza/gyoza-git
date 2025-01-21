@@ -20,8 +20,9 @@ describe('HTTPHandler tests', () => {
             })
             handler.handleRequest()
 
-            const decompressedResponse = handler.getResponse()
-            let output = await readStreamContents(decompressedResponse)
+            const compressedResponse = handler.getResponseStream()
+            console.log(typeof compressedResponse)
+            let output = await readStreamContents(compressedResponse)
             output = decompressData(output, encoding)
 
             expect(output.toString()).toBe('World!')
@@ -53,7 +54,7 @@ describe('HTTPHandler tests', () => {
         test(`should respond with 405 to ${method} method`, () => {
             const handler = new MockHTTPHandler()
             handler.handleRequest(method)
-            const response = handler.getResponse()
+            const response = handler.getResponseStream()
             expect(response.statusCode).toBe(405)
         })
     })
@@ -66,7 +67,7 @@ describe('HTTPHandler tests', () => {
         }
         const handler = new MockHTTPHandler('HEADERS', '', headers)
         handler.handleRequest()
-        const response = handler.getResponse()
+        const response = handler.getResponseStream()
         const actual = response.headers
         const expected = {
             'Content-Length': 10,
@@ -101,8 +102,8 @@ class MockHTTPHandler extends HTTPHandler {
         return this._request
     }
 
-    getResponse() {
-        return this._response
+    getResponseStream() {
+        return this._responseStream
     }
 
     handleRequest() {
