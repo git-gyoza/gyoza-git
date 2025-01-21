@@ -2,7 +2,6 @@ const zlib = require('zlib');
 const {PassThrough} = require('stream');
 
 const {DecompressionError, decompress} = require('../src/compress')
-const buffer = require("node:buffer");
 
 function compressData(data, encoding) {
     switch (encoding) {
@@ -18,16 +17,14 @@ function compressData(data, encoding) {
 }
 
 function createReadableStream(buffer) {
-    const stream = new PassThrough();
-    stream.end(buffer);
-    return stream;
+    return new PassThrough().end(buffer);
 }
 
-function readBuffer(stream) {
+function readStreamContents(stream) {
     return new Promise((resolve, reject) => {
-        let buffer = '';
-        stream.on('data', (chunk) => buffer += chunk.toString());
-        stream.on('end', () => resolve(buffer));
+        let output = '';
+        stream.on('data', (chunk) => output += chunk.toString());
+        stream.on('end', () => resolve(output));
         stream.on('error', (err) => reject(err));
     });
 }
@@ -49,7 +46,7 @@ describe('tests for decompression', () => {
             const stream = createReadableStream(data)
 
             const decompressed = decompress(stream, encoding)
-            const output = await readBuffer(decompressed)
+            const output = await readStreamContents(decompressed)
             expect(output).toBe(expected)
         })
     });
