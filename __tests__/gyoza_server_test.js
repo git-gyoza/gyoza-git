@@ -1,9 +1,9 @@
 const {PassThrough} = require('stream')
 
-const GyozaServer = require("../src/gyoza_server")
+const {HTTPHandler} = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
-describe('GyozaServer tests', () => {
+describe('HTTPHandler tests', () => {
 
     test('request stream should be decompressed', () => {
         const server = new MockGyozaServer()
@@ -42,15 +42,12 @@ describe('GyozaServer tests', () => {
 })
 
 /**
- * A mock for the actual {@link GyozaServer}.
- * Provides a {@link MockGyozaServer#handleRequest}
- * method for testing purposes.
+ * A mock for the actual {@link HTTPHandler}.
  */
-class MockGyozaServer extends GyozaServer {
+class MockHTTPHandler extends HTTPHandler {
 
     /**
-     * Makes the protected method {@link GyozaServer#_handleRequest}
-     * publicly available.
+     * Instantiates a new Mock HTTP handler.
      *
      * @param method the request method ('GET' by default)
      * @param path the request path ('' by default)
@@ -58,23 +55,20 @@ class MockGyozaServer extends GyozaServer {
      * @param body the request body
      * @returns {MockResponse} the response containing all the data sent
      */
-    handleRequest(method = 'GET', path = '', headers = {}, body = null) {
-        const request = new MockRequest(method, path, headers, body)
-        const response = new MockResponse()
-        this._handleRequest(request, response)
-        return response
+    constructor(method = 'GET', path = '', headers = {}, body = null) {
+        super(new MockRequest(method, path, headers, body), new MockResponse())
     }
 
-    _handleRequest(request, response) {
-        if (request.method === 'HEADERS')
-            super._response(request, response, 200, null, request.headers)
-        else super._handleRequest(request, response)
+    handleRequest() {
+        if (this._request.method === 'HEADERS')
+            super._reply(200, null, this._request.headers)
+        else super.handleRequest()
     }
 
-    _get(path, headers, request, response) {
-        if (headers['Body'])
-            super._response(request, response, 200, request.read().toString())
-        else super._get(path, headers, request, response)
+    _get() {
+        if (this._headers['Body'])
+            super._reply(200, this._request.read().toString())
+        else super._get()
     }
 
 }
@@ -130,5 +124,3 @@ class MockResponse {
     }
 
 }
-
-module.exports = {MockGyozaServer, MockResponse}
