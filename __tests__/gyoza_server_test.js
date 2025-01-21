@@ -10,12 +10,14 @@ describe('GyozaServer tests', () => {
     test('should reset all variables after stopping', () => {
         const server = new MockServer()
         const port = 12345
+        expect(server.getPort()).toBe(null)
+        expect(server.getInternalServer()).toBe(null)
         server.start(port)
         expect(server.getPort()).toBe(port)
-        expect(server.getInternalServer()).not.toBe(undefined)
+        expect(server.getInternalServer()).not.toBe(null)
         server.stop()
-        expect(server.getPort()).toBe(undefined)
-        expect(server.getInternalServer()).toBe(undefined)
+        expect(server.getPort()).toBe(null)
+        expect(server.getInternalServer()).toBe(null)
     })
 
     test('should throw error when starting already started server', () => {

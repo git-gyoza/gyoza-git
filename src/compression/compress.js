@@ -25,11 +25,11 @@ function compress(stream, acceptedEncoding) {
     if (acceptedEncoding != null && acceptedEncoding.trim().length > 0) {
         const acceptedEncodings = acceptedEncoding.replace(' ', '').split(',')
 
-        let encoder = undefined
-        for (let i = 0; i < acceptedEncodings.length && encoder === undefined; i++)
+        let encoder = null
+        for (let i = 0; i < acceptedEncodings.length && encoder == null; i++)
             encoder = Encoder.valueOf(acceptedEncodings[i])
 
-        if (encoder === undefined) throw new CompressionError(acceptedEncoding)
+        if (encoder == null) throw new CompressionError(acceptedEncoding)
         else stream = stream.pipe(encoder.compressionStream())
 
         returned.encoding = encoder.name
@@ -55,7 +55,7 @@ function decompress(stream, encoding) {
 
         const firstEncoding = encodings[0]
         const encoder = Encoder.valueOf(firstEncoding)
-        if (encoder === undefined) throw new CompressionError(firstEncoding)
+        if (encoder == null) throw new CompressionError(firstEncoding)
         else stream = stream.pipe(encoder.decompressionStream())
 
         if (encodings.length === 1) return stream

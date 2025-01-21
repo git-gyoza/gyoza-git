@@ -47,6 +47,8 @@ class GyozaServer {
      */
     constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
         this._newHTTPHandler = newHTTPHandler
+        this._port = null
+        this._internalServer = null
     }
 
     /**
@@ -60,7 +62,7 @@ class GyozaServer {
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
-        if (this._internalServer !== undefined) GyozaServerError.alreadyStarted(port)
+        if (this._internalServer != null) GyozaServerError.alreadyStarted(port)
         else {
             this._port = port
             this._internalServer = http.createServer((request, response) =>
@@ -76,10 +78,10 @@ class GyozaServer {
      * is thrown.
      */
     stop() {
-        if (this._internalServer !== undefined) {
+        if (this._internalServer != null) {
             this._internalServer.close()
-            this._port = undefined
-            this._internalServer = undefined
+            this._port = null
+            this._internalServer = null
         } else GyozaServerError.notStarted()
     }
 
