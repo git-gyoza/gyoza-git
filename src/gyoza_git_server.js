@@ -84,17 +84,22 @@ class GitHTTPHandler extends HTTPHandler {
         if (error != null) super._error(400, error)
         else {
             const strippedPath = parseGitPath(this._path)
-            super._log(`${this._remoteAddress} (${strippedPath}) => ${service.action}(${service.cmd})`)
+            const actualDirectory = `${this.#repoDirectory}${strippedPath}`
+            if (!fs.existsSync(actualDirectory) || !fs.lstatSync(actualDirectory).isDirectory())
+                super._error(404, `Could not find repository ${strippedPath}`)
+            else {
+                super._log(`${this._remoteAddress} (${strippedPath}) => ${service.action}(${service.cmd})`)
 
-            super._reply(200, null, {
-                'Content-Type': service.type
-            }, false)
+                super._reply(200, null, {
+                    'Content-Type': service.type
+                }, false)
 
-            const args = [...service.args, `${this.#repoDirectory}${strippedPath}`]
-            const process = spawn(service.cmd, args)
-            const serviceStream = service.createStream()
-            serviceStream.pipe(process.stdin)
-            process.stdout.pipe(serviceStream)
+                const args = [...service.args, actualDirectory]
+                const process = spawn(service.cmd, args)
+                const serviceStream = service.createStream()
+                serviceStream.pipe(process.stdin)
+                process.stdout.pipe(serviceStream)
+            }
         }
     }
 
