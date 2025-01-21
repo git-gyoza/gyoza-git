@@ -2,7 +2,7 @@ const http = require('http')
 
 const { SERVER_NAME } = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
-const {decompress} = require("./compression/compress");
+const {decompress, compress} = require("./compression/compress");
 
 /**
  * Gets the client IP from the given request.
@@ -173,6 +173,11 @@ class HTTPHandler {
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
+
+        const compressionData = compress(this._response, this._headers['Accept-Encoding'])
+        if (compressionData.encoding !== 'identity')
+            headers['Content-Encoding'] = compressionData.encoding
+        this._response = compressionData.stream
 
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
