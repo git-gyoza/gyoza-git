@@ -29,4 +29,4 @@ function decompress(stream, encoding) {
     }
 }
 
-module.exports = decompress
+module.exports = { DecompressionError, decompress }

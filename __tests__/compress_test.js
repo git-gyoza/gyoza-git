@@ -1,4 +1,4 @@
-const decompress = require('../src/compress')
+const {DecompressionError, decompress} = require('../src/compress')
 
 class MockStream extends ReadableStream {
 
@@ -29,7 +29,7 @@ describe('tests for decompression', () => {
         ['gzip, invalid', stream('gzip')]
     ]).forEach((stream, encoding) => {
         test(`should throw error on invalid encoding ${encoding}`, () => {
-            expect(() => decompress(stream, encoding)).toThrow()
+            expect(() => decompress(stream, encoding)).toThrow(DecompressionError)
         })
     })
 
