@@ -39,7 +39,7 @@ describe('GitHTTPHandler tests', () => {
     test('backend valid service', async () => {
         const expectedType = 'text/plain'
         const expected = 'Hello, World!'
-        const serviceStream = new PassThrough()
+        const serviceStream = new MockResponseStream()
         const service = {
             action: 'info',
             cmd: 'echo',
@@ -55,7 +55,6 @@ describe('GitHTTPHandler tests', () => {
         expect(response.statusCode).toEqual(200)
         expect(response.headers['Content-Type']).toEqual(expectedType)
 
-        serviceStream.end()
         const data = await readStreamContents(serviceStream)
         expect(data.toString()).toEqual(expected + ' .\n')
     })
@@ -119,6 +118,10 @@ class MockResponseStream extends PassThrough {
     writeHead(statusCode, headers) {
         this.statusCode = statusCode
         this.headers = headers
+    }
+
+    pipe(stream, options) {
+        // do nothing for compatibility reasons
     }
 
 }
