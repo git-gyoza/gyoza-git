@@ -9,7 +9,7 @@ function compressData(data, encoding) {
             return zlib.gzipSync(data);
         case 'deflate':
             return zlib.deflateSync(data);
-        case 'brotli':
+        case 'br':
             return zlib.brotliCompressSync(data);
         default:
             throw new CompressionError(encoding);
@@ -33,7 +33,7 @@ describe('tests for decompression', () => {
 
     [
         undefined, null, '',
-        'gzip', 'deflate', 'gzip, deflate', 'gzip, deflate, brotli'
+        'gzip', 'deflate', 'gzip, deflate', 'gzip, deflate, br'
     ].forEach((encoding) => {
         test(`should correctly decompress ${encoding}`, async () => {
             const expected = 'Hello, World!'
