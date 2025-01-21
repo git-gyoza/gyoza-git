@@ -34,14 +34,15 @@ class GyozaServer {
 
     /**
      * Starts a new {@link http} server.
-     * All the requests will be redirected to {@link GyozaServer#_handleRequest}.
+     * All the requests will be redirected to the {@link HTTPHandler} callback
+     * specified in the constructor.
      *
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
         this.#port = port
         http.createServer((request, response) =>
-            this.#newHTTPHandler(request, response))
+            this.#newHTTPHandler(request, response).handleRequest())
             .listen(this.#port)
     }
 
