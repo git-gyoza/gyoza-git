@@ -54,14 +54,6 @@ class GyozaServer {
  * A Handler for HTTP requests sent from a client.
  */
 class HTTPHandler {
-    #request
-    #response
-
-    #method
-    #path
-    #headers
-
-    #clientIp
 
     /**
      * Instantiates a new HTTPHandler.
@@ -70,14 +62,14 @@ class HTTPHandler {
      * @param response the response object
      */
     constructor(request, response) {
-        this.#request = request
-        this.#response = response
+        this._request = request
+        this._response = response
 
-        this.#method = request.method
-        this.#path = request.url
-        this.#headers = request.headers
+        this._method = request.method
+        this._path = request.url
+        this._headers = request.headers
 
-        this.#clientIp = getIp(request)
+        this._remoteAddress = getIp(request)
     }
 
     /**
@@ -89,30 +81,24 @@ class HTTPHandler {
      * @private
      */
     handleRequest() {
-        const request = this.#request
-        const response = this.#response
-        const method = this.#method
-        const path = this.#path
-        const headers = this.#headers
+        this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
+        this._request = decompress(this._request, this._headers['Content-Encoding'])
 
-        this._log(`${this.#clientIp} -> ${method} ${path}`)
-        this.request = decompress(this.request, headers['Content-Encoding'])
-
-        switch (method) {
+        switch (this._method) {
             case 'GET':
-                return this._get(path, headers, request, response)
+                return this._get()
             case 'POST':
-                return this._post(path, headers, request, response)
+                return this._post()
             case 'PUT':
-                return this._put(path, headers, request, response)
+                return this._put()
             case 'PATCH':
-                return this._patch(path, headers, request, response)
+                return this._patch()
             case 'DELETE':
-                return this._delete(path, headers, request, response)
+                return this._delete()
             case 'HEAD':
-                return this._head(path, headers, request, response)
+                return this._head()
             default:
-                this._response(request, response, 405)
+                this._reply(405)
         }
     }
 
@@ -120,84 +106,60 @@ class HTTPHandler {
      * Handles all the GET HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _get(path, headers, request, response) {
-        this._response(request, response, 405)
+    _get() {
+        this._reply(405)
     }
 
     /**
      * Handles all the POST HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _post(path, headers, request, response) {
-        this._response(request, response, 405)
+    _post() {
+        this._reply(405)
     }
 
     /**
      * Handles all the PUT HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _put(path, headers, request, response) {
-        this._response(request, response, 405)
+    _put() {
+        this._reply(405)
     }
 
     /**
      * Handles all the PATCH HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _patch(path, headers, request, response) {
-        this._response(request, response, 405)
+    _patch() {
+        this._reply(405)
     }
 
     /**
      * Handles all the DELETE HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _delete(path, headers, request, response) {
-        this._response(request, response, 405)
+    _delete() {
+        this._reply(405)
     }
 
     /**
      * Handles all the HEAD HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _head(path, headers, request, response) {
-        this._response(request, response, 405)
+    _head() {
+        this._reply(405)
     }
 
     /**
@@ -208,20 +170,20 @@ class HTTPHandler {
      * @param headers the headers to send
      * @private
      */
-    _response(statusCode, body = null, headers = {}) {
+    _reply(statusCode, body = null, headers = {}) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        this.#response.writeHead(statusCode, headers)
-        this._log(`${this.#clientIp} <- ${statusCode}`)
+        this._response.writeHead(statusCode, headers)
+        this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
-            if (body instanceof String) this.#response.write(body)
-            else this.#response.write(JSON.stringify(body))
+            if (body instanceof String) this._response.write(body)
+            else this._response.write(JSON.stringify(body))
         }
-        this.#response.end()
+        this._response.end()
     }
 
     /**
