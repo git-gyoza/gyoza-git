@@ -1,4 +1,4 @@
-const zlib = require("node:zlib");
+const zlib = require('zlib');
 
 /**
  * An {@link Error} thrown upon an invalid decompression.

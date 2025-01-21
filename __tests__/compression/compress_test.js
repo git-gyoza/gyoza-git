@@ -1,7 +1,7 @@
 const zlib = require('zlib');
 const {PassThrough} = require('stream');
 
-const {CompressionError, decompress} = require('../src/compress')
+const {CompressionError, decompress} = require('../../src/compression/compress')
 
 function compressData(data, encoding) {
     switch (encoding) {
