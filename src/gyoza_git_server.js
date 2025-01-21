@@ -1,7 +1,8 @@
-const spawn = require('child_process').spawn
+const fs = require('fs')
 const backend = require('git-http-backend')
+const spawn = require('child_process').spawn
 
-const {GyozaServer, HTTPHandler} = require('./gyoza_server')
+const {GyozaServer, HTTPHandler, GyozaServerError} = require('./gyoza_server')
 
 /**
  * Strips out from the given path the common requests
@@ -54,7 +55,9 @@ class GitHTTPHandler extends HTTPHandler {
      */
     constructor(request, response, repoDirectory) {
         super(request, response)
-        this.#repoDirectory = repoDirectory
+        if (fs.existsSync(this.#repoDirectory) && fs.lstatSync(this.#repoDirectory).isDirectory())
+            this.#repoDirectory = repoDirectory
+        else GyozaServerError.invalidDirectory(repoDirectory)
     }
 
     _get() {
