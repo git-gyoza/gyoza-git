@@ -2,6 +2,7 @@ const {PassThrough} = require('stream')
 
 const {GyozaServerError} = require("../src/gyoza_server")
 const {parseGitPath, GitHTTPHandler} = require('../src/gyoza_git_server')
+const {readStreamContents} = require("./compression/compress_test");
 
 function mockRequest() {
     return {
@@ -35,6 +36,15 @@ describe('parseGitPath tests', () => {
 
 describe('GitHTTPHandler tests', () => {
 
+    test('backend should return 400 on error', async () => {
+        const expected = 'Something went wrong'
+        const handler = new MockGitHTTPHandler()
+        handler.backend(new Error(expected), null)
+        const response = await handler.getResponse()
+        expect(response.statusCode).toEqual(400)
+        expect(response.body).toBe(JSON.stringify({'error': expected}))
+    })
+
     test('should not throw on valid repositories directory', () => {
         expect(() =>
             new GitHTTPHandler(mockRequest(), null, '.'))
@@ -55,8 +65,10 @@ class MockGitHTTPHandler extends GitHTTPHandler {
         super(mockRequest(), new MockResponseStream(), '.');
     }
 
-    getResponse() {
-        return this._response
+    async getResponse() {
+        return {
+            body: await readStreamContents(this._responseStream)
+        }
     }
 
     backend(error, service) {
