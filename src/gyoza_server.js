@@ -17,6 +17,25 @@ function getIp(request) {
 }
 
 /**
+ * Represents a type of error thrown by {@link GyozaServer}.
+ */
+class GyozaServerError extends Error {
+
+    constructor(message) {
+        super(message)
+    }
+
+    static alreadyStarted(port) {
+        throw new GyozaServerError(`Server already started on port: ${port}`)
+    }
+
+    static notStarted() {
+        throw new GyozaServerError(`Server has not been started yet`)
+    }
+
+}
+
+/**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
@@ -265,4 +284,4 @@ class HTTPHandler {
 
 }
 
-module.exports = {GyozaServer, HTTPHandler}
+module.exports = {GyozaServer, GyozaServerError, HTTPHandler}
