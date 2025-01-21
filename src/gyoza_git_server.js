@@ -68,4 +68,4 @@ class GitHTTPHandler extends HTTPHandler {
 
 }
 
-new GyozaGitServer('/home/smith/gitserver/').start()
+module.exports = {GyozaGitServer, parseGitPath}
