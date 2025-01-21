@@ -83,7 +83,7 @@ describe('HTTPHandler tests', () => {
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
             const handler = new MockHTTPHandler()
-            handler.handleRequest(method)
+            handler.handleRequest()
             const response = handler.getResponseStream()
             expect(response.statusCode).toBe(405)
         })
