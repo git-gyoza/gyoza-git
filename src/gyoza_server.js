@@ -102,11 +102,7 @@ class HTTPHandler {
                     this._reply(405)
             }
         } catch (error) {
-            const errorMessage = error.message
-            this._log(`Error while parsing request of ${this._remoteAddress}(${this._method} ${this._path}): ${errorMessage}`)
-            this._reply(400, {
-                'error': errorMessage
-            })
+            this._error(400, error)
         }
     }
 
@@ -210,6 +206,7 @@ class HTTPHandler {
      */
     _error(statusCode, error = 'Unknown error') {
         if (error instanceof Error) error = error.message
+        this._log(`Error with request ${this._remoteAddress}(${this._method} ${this._path}): ${error}`)
         this.#write(statusCode, {}, {'error': error})
         this._responseStream.end()
     }
