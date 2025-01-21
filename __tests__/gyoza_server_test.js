@@ -9,7 +9,9 @@ describe('HTTPHandler tests', () => {
 
     [
         undefined, null,
-        '', 'identity'
+        '', 'identity',
+        'gzip',
+        'deflate', 'br'
     ].forEach((encoding) => {
         test('request stream should be decompressed', () => {
             const expected = 'Hello, World!'
