@@ -6,9 +6,9 @@ const {readStreamContents} = require("./compression/compress_test");
 
 function mockRequest() {
     return {
-        'request': null,
-        'url': null,
-        'headers': null,
+        'request': 'GET',
+        'url': '/',
+        'headers': {},
         'connection': {
             'remoteAddress': '127.0.0.1'
         }
