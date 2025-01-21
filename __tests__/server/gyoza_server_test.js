@@ -1,7 +1,8 @@
 const {PassThrough} = require('stream')
 
-const {GyozaServer, GyozaServerError, HTTPHandler} = require("../../src/server/gyoza_server")
 const {SERVER_NAME} = require("../../src/gyoza-git")
+const StatusCode = require('../../src/status_codes');
+const {GyozaServer, GyozaServerError, HTTPHandler} = require("../../src/server/gyoza_server")
 
 const {decompressData, compressData, readStreamContents} = require('../compression/compress_test')
 
@@ -83,7 +84,7 @@ describe('HTTPHandler tests', () => {
         handler.handleRequest()
         const response = handler.getResponse()
         const output = await readStreamContents(response)
-        expect(response.statusCode).toEqual(400)
+        expect(response.statusCode).toEqual(StatusCode.BAD_REQUEST)
         expect(output.toString()).toEqual(JSON.stringify({
             'error': 'Unsupported encoding: not_existing'
         }))
@@ -117,7 +118,7 @@ describe('HTTPHandler tests', () => {
         handler.handleRequest()
         const response = handler.getResponse()
         const output = await readStreamContents(response)
-        expect(response.statusCode).toEqual(400)
+        expect(response.statusCode).toEqual(StatusCode.BAD_REQUEST)
         expect(output.toString()).toEqual(JSON.stringify({
             'error': 'Unsupported encoding: not_existing'
         }))
@@ -128,7 +129,7 @@ describe('HTTPHandler tests', () => {
             const response = new MockResponse()
             const handler = new HTTPHandler(new MockRequest(method, '', {}), response)
             handler.handleRequest()
-            expect(response.statusCode).toBe(405)
+            expect(response.statusCode).toBe(StatusCode.METHOD_NOT_ALLOWED)
         })
     })
 
@@ -185,13 +186,13 @@ class MockHTTPHandler extends HTTPHandler {
 
     handleRequest() {
         if (this._method === 'HEADERS')
-            super._reply(200, null, this._headers)
+            super._reply(StatusCode.OK, null, this._headers)
         else super.handleRequest()
     }
 
     _get() {
         if (this._path === 'hello')
-            super._reply(200, 'World!')
+            super._reply(StatusCode.OK, 'World!')
         else super._get()
     }
 

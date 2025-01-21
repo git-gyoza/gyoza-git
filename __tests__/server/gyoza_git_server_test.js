@@ -1,6 +1,7 @@
 const http = require('http')
 const {PassThrough} = require('stream')
 
+const StatusCode = require('../../src/status_codes')
 const {GyozaServerError, GyozaServer} = require("../../src/server/gyoza_server")
 const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../../src/server/gyoza_git_server')
 const {readStreamContents} = require("../compression/compress_test")
@@ -39,7 +40,7 @@ describe('GyozaGitServer integration tests', () => {
 
         server.stop()
 
-        expect(response.statusCode).toBe(200)
+        expect(response.statusCode).toBe(StatusCode.OK)
     })
 
 })
@@ -100,7 +101,7 @@ describe('GitHTTPHandler tests', () => {
         handler.backend(undefined, service)
 
         const response = await handler.getResponse()
-        expect(response.statusCode).toEqual(200)
+        expect(response.statusCode).toEqual(StatusCode.OK)
         expect(response.headers['Content-Type']).toEqual(expectedType)
 
         const data = await readStreamContents(serviceStream)
@@ -112,7 +113,7 @@ describe('GitHTTPHandler tests', () => {
         handler.backend(undefined, null)
 
         const response = await handler.getResponse()
-        expect(response.statusCode).toEqual(404)
+        expect(response.statusCode).toEqual(StatusCode.NOT_FOUND)
     });
 
     test('backend should return 400 on error', async () => {
@@ -120,7 +121,7 @@ describe('GitHTTPHandler tests', () => {
         const handler = new MockGitHTTPHandler()
         handler.backend(new Error(expected), null)
         const response = await handler.getResponse()
-        expect(response.statusCode).toEqual(400)
+        expect(response.statusCode).toEqual(StatusCode.BAD_REQUEST)
         expect(response.body).toBe(JSON.stringify({'error': expected}))
     });
 
