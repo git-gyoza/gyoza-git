@@ -21,6 +21,16 @@ function getIp(request) {
  */
 class GyozaServer {
     #port
+    #newHTTPHandler
+
+    /**
+     * Instantiates a new Gyoza server.
+     *
+     * @param newHTTPHandler a callback responsible for creating a custom HTTPHandler.
+     */
+    constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
+        this.#newHTTPHandler = newHTTPHandler
+    }
 
     /**
      * Starts a new {@link http} server.
@@ -31,21 +41,8 @@ class GyozaServer {
     start(port = 21125) {
         this.#port = port
         http.createServer((request, response) =>
-            this._handleRequest(request, response))
+            this.#newHTTPHandler(request, response))
             .listen(this.#port)
-    }
-
-    /**
-     * Delegates the handling of an HTTP request
-     * to a new HTTPHandler.
-     *
-     * @param request the request object
-     * @param response the response object
-     * @returns {HTTPHandler} the handler
-     * @private
-     */
-    _handleRequest(request, response) {
-        return new HTTPHandler(request, response)
     }
 
 }
@@ -207,4 +204,4 @@ class HTTPHandler {
 
 }
 
-module.exports = GyozaServer
+module.exports = {GyozaServer, HTTPHandler}
