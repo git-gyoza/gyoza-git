@@ -27,29 +27,35 @@ jobs:
 
   coverage-badge:
     name: Generate Jest coverage report badges
-    needs: build
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
-      # Necessary to push the generated badges to the repo
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      # Necessary to generate the coverage report.
-      # Make sure to add 'json-summary' to the coverageReporters in jest options
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - run: npm install
-      - name: Coverage
-        run: npm run coverage
-      - name: Delete badges branch
-        run: |-
-          git fetch origin badges
-          git branch -d badges
-          git push origin --delete remoteBranchName
+      - run: npm test
+
+      - name: Delete remote badges branch
+        run: git push origin --delete badges
+
       - name: Create badges branch
-        run: |-
-          git checkout -b badges
-          git push --set-upstream origin badges
+        run: git checkout -b badges
+
+      - name: Tests
+        run: npm run coverage
+
       - name: Generating coverage badges
         uses: jpb06/jest-badges-action@latest
+        with:
+          branches: '*'
+          target-branch: badges
+
+      - name: Push badges branch
+        run: git push origin badges
 
   publish-npm:
     name: Build and Publish
