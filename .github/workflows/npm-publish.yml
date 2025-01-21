@@ -1,7 +1,7 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: Node.js Package
+name: Node.js Build, Test and Publish
 
 on:
   push:
@@ -15,15 +15,22 @@ concurrency:
 
 jobs:
   build:
-    name: Execute tests
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm test
+
+      - name: Setup dependencies
+        run: npm install
+
+      - name: Tests
+        run: npm test
 
   coverage-badge:
     name: Generate Jest coverage report badges
@@ -33,12 +40,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - run: npm install
-      - run: npm test
+      - name: Setup dependencies
+        run: npm install
 
       - name: Delete remote badges branch
         run: git push origin --delete badges
@@ -63,12 +71,18 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://registry.npmjs.org/
-      - run: npm install
-      - run: npm publish
+
+      - name: Setup dependencies
+        run: npm install
+
+      - name: Publish to npmjs.com
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
