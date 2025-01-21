@@ -46,6 +46,26 @@ describe('parseGitPath tests', () => {
     })
 })
 
+describe('GyozaGitServer integration tests', () => {
+
+    test('it should return 200 on valid request', async () => {
+        const server = new GyozaGitServer('.')
+        server.start()
+
+        const response = await makeGETRequest({
+            hostname: 'localhost',
+            port: 21125,
+            path: '/info/refs?service=git-upload-pack',
+            method: 'GET'
+        })
+
+        server.stop()
+
+        expect(response.statusCode).toBe(200)
+    })
+
+})
+
 describe('GyozaGitServer tests', () => {
 
     test('start should call on super', () => {
