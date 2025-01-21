@@ -6,17 +6,19 @@ const {SERVER_NAME} = require("../src/gyoza-git")
 describe('HTTPHandler tests', () => {
 
     test('request stream should be decompressed', () => {
-        const server = new MockGyozaServer()
-        const response = server.handleRequest('GET', '', {
+        const handler = new MockHTTPHandler('GET', '', {
             'Content-Encoding': 'gzip'
         })
+        handler.handleRequest()
+        const response = handler.getResponse()
         expect(response.body).toBe('Hello, World!')
     });
 
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
-            const server = new MockGyozaServer()
-            const response = server.handleRequest(method)
+            const handler = new MockHTTPHandler()
+            handler.handleRequest(method)
+            const response = handler.getResponse()
             expect(response.statusCode).toBe(405)
         })
     })
@@ -27,8 +29,9 @@ describe('HTTPHandler tests', () => {
             true: false,
             'string': 'hello world'
         }
-        const server = new MockGyozaServer()
-        const response = server.handleRequest('HEADERS', '', headers)
+        const handler = new MockHTTPHandler('HEADERS', '', headers)
+        handler.handleRequest()
+        const response = handler.getResponse()
         const actual = response.headers
         const expected = {
             'Content-Length': 10,
@@ -57,6 +60,10 @@ class MockHTTPHandler extends HTTPHandler {
      */
     constructor(method = 'GET', path = '', headers = {}, body = null) {
         super(new MockRequest(method, path, headers, body), new MockResponse())
+    }
+
+    getResponse() {
+        return this._response
     }
 
     handleRequest() {
