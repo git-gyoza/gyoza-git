@@ -87,17 +87,23 @@ class HTTPHandler {
 
             switch (this._method) {
                 case 'GET':
-                    return this._get()
+                    this._get()
+                    break
                 case 'POST':
-                    return this._post()
+                    this._post()
+                    break
                 case 'PUT':
-                    return this._put()
+                    this._put()
+                    break
                 case 'PATCH':
-                    return this._patch()
+                    this._patch()
+                    break
                 case 'DELETE':
-                    return this._delete()
+                    this._delete()
+                    break
                 case 'HEAD':
-                    return this._head()
+                    this._head()
+                    break
                 default:
                     this._reply(405)
             }
