@@ -80,6 +80,10 @@ class MockHTTPHandler extends HTTPHandler {
         else super._get()
     }
 
+    _log(message) {
+        // Prevents useless logging
+    }
+
 }
 
 /**
