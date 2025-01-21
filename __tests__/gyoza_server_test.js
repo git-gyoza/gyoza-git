@@ -1,9 +1,27 @@
 const {PassThrough} = require('stream')
 
-const {HTTPHandler} = require("../src/gyoza_server")
+const {GyozaServer, GyozaServerError, HTTPHandler} = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
 const {decompressData, compressData, readStreamContents} = require('./compression/compress_test')
+
+describe('GyozaServer tests', () => {
+
+    test('should throw error when starting already started server', () => {
+        const server = new GyozaServer()
+        server.start()
+        expect(() => server.start()).toThrowError(GyozaServerError)
+        server.stop()
+    })
+
+    test('should throw error when stopping already stopped server', () => {
+        const server = new GyozaServer()
+        server.start()
+        server.stop()
+        expect(() => server.stop()).toThrowError(GyozaServerError)
+    })
+
+})
 
 describe('HTTPHandler tests', () => {
 
