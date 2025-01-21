@@ -60,7 +60,7 @@ class MockGyozaServer extends GyozaServer {
 
     _handleRequest(request, response) {
         if (request.method === 'HEADERS')
-            super._response(response, 200, null, request.headers)
+            super._response(request, response, 200, null, request.headers)
         else super._handleRequest(request, response)
     }
 

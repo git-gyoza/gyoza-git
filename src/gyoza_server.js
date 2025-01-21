@@ -48,9 +48,8 @@ class GyozaServer {
         const method = request.method
         const path = request.url
         const headers = request.headers
-        let ip = request.connection.remoteAddress
-        ip = ip.split(':')
-        ip = ip[ip.length - 1]
+
+        this._log(`${getIp(request)} -> ${method} ${path}`)
 
         switch (method) {
             case 'GET':
@@ -66,7 +65,7 @@ class GyozaServer {
             case 'HEAD':
                 return this._head(path, headers, request, response)
             default:
-                this._response(response, 405)
+                this._response(request, response, 405)
         }
     }
 
@@ -81,7 +80,7 @@ class GyozaServer {
      * @private
      */
     _get(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
@@ -95,7 +94,7 @@ class GyozaServer {
      * @private
      */
     _post(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
@@ -109,7 +108,7 @@ class GyozaServer {
      * @private
      */
     _put(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
@@ -123,7 +122,7 @@ class GyozaServer {
      * @private
      */
     _patch(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
@@ -137,7 +136,7 @@ class GyozaServer {
      * @private
      */
     _delete(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
@@ -151,19 +150,20 @@ class GyozaServer {
      * @private
      */
     _head(path, headers, request, response) {
-        this._response(response, 405)
+        this._response(request, response, 405)
     }
 
     /**
      * Sends a response to the client.
      *
+     * @param request the request object
      * @param response the response object
      * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
      * @private
      */
-    _response(response, statusCode, body = null, headers = {}) {
+    _response(request, response, statusCode, body = null, headers = {}) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
@@ -171,6 +171,7 @@ class GyozaServer {
         headers['Server'] = SERVER_NAME
 
         response.writeHead(statusCode, headers)
+        this._log(`${getIp(request)} <- ${statusCode}`)
         if (body != null) {
             if (body instanceof String) response.write(body)
             else response.write(JSON.stringify(body))
