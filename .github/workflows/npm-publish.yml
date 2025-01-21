@@ -39,10 +39,16 @@ jobs:
       - run: npm install
       - name: Coverage
         run: npm run coverage
+      - name: Delete badges branch
+        run: |-
+          git branch -d badges
+          git push origin --delete remoteBranchName
+      - name: Create badges branch
+        run: |-
+          git checkout -b badges
+          git push --set-upstream origin badges
       - name: Generating coverage badges
         uses: jpb06/jest-badges-action@latest
-        with:
-          target-branch: 'badge'
 
   publish-npm:
     name: Build and Publish
