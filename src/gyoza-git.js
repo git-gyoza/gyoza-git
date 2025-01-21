@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs')
 
 pkg = JSON.parse(fs.readFileSync(`${__dirname}/${'../package.json'}`, 'utf8'))
 

@@ -107,6 +107,6 @@ function readStreamContents(stream) {
             output = Buffer.concat([output, Buffer.from(chunk)])
         )
         stream.on('end', () => resolve(output))
-        stream.on('error', (err) => reject(err))
+        stream.on('error', (error) => reject(error))
     })
 }
