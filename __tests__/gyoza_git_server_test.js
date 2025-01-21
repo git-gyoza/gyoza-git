@@ -43,12 +43,14 @@ describe('GitHTTPHandler tests', () => {
         const response = await handler.getResponse()
         expect(response.statusCode).toEqual(400)
         expect(response.body).toBe(JSON.stringify({'error': expected}))
-    })
+    });
 
-    test('should not throw on valid repositories directory', () => {
-        expect(() =>
-            new GitHTTPHandler(mockRequest(), null, '.'))
-            .not.toThrow()
+    [__dirname, '.', '../'].forEach((directory) => {
+        test(`should not throw on repositories directory: ${directory}`, () => {
+            expect(() =>
+                new GitHTTPHandler(mockRequest(), null, directory))
+                .not.toThrow()
+        })
     })
 
     test('should throw on invalid repositories directory', () => {
