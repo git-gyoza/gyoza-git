@@ -58,14 +58,15 @@ describe('tests for compression', () => {
             const expected = 'Hello, World!'
 
             let data = Buffer.from(expected)
-            const stream = new PassThrough();
+            const stream = new PassThrough()
             stream.end(data)
 
-            const compressed = compress(stream, expectedEncoding);
-            let output = await readStreamContents(compressed.stream, encoding);
-            output = decompressData(output, compressed.encoding);
+            const compressed = compress(stream, encoding)
+            expect(compressed.encoding).toBe(expectedEncoding)
+            
+            let output = await readStreamContents(compressed.stream, expectedEncoding)
+            output = decompressData(output, compressed.encoding)
 
-            expect(compressed.encoding).toBe(expectedEncoding);
             expect(output.toString()).toBe(expected)
         })
     });
