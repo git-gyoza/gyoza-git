@@ -83,6 +83,7 @@ class MockGitHTTPHandler extends GitHTTPHandler {
     }
 
     async getResponse() {
+        this._responseStream.end()
         return {
             statusCode: this._response.statusCode,
             headers: this._response.headers,
