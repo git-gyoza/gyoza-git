@@ -41,6 +41,7 @@ jobs:
         run: npm run coverage
       - name: Delete badges branch
         run: |-
+          git fetch origin badges
           git branch -d badges
           git push origin --delete remoteBranchName
       - name: Create badges branch
