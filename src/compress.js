@@ -3,7 +3,7 @@ const zlib = require("node:zlib");
 /**
  * An {@link Error} thrown upon an invalid decompression.
  */
-class DecompressionError extends Error {
+class CompressionError extends Error {
     constructor(encoding) {
         super(`Unsupported encoding: ${encoding}`);
     }
@@ -34,11 +34,11 @@ function decompress(stream, encoding) {
                 stream = stream.pipe(zlib.createBrotliDecompress())
                 break
             default:
-                throw new DecompressionError(split[0])
+                throw new CompressionError(split[0])
         }
         if (split.length === 1) return stream
         else return decompress(stream, split.slice(1).join(','))
     }
 }
 
-module.exports = { DecompressionError, decompress }
+module.exports = { CompressionError, decompress }

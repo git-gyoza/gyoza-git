@@ -1,7 +1,7 @@
 const zlib = require('zlib');
 const {PassThrough} = require('stream');
 
-const {DecompressionError, decompress} = require('../src/compress')
+const {CompressionError, decompress} = require('../src/compress')
 
 function compressData(data, encoding) {
     switch (encoding) {
@@ -12,7 +12,7 @@ function compressData(data, encoding) {
         case 'brotli':
             return zlib.brotliCompressSync(data);
         default:
-            throw new DecompressionError(encoding);
+            throw new CompressionError(encoding);
     }
 }
 
@@ -53,7 +53,7 @@ describe('tests for decompression', () => {
 
     ['invalid', 'gzip, invalid'].forEach((encoding) => {
         test(`should throw error on invalid encoding ${encoding}`, () => {
-            expect(() => decompress(new PassThrough(), encoding)).toThrow(DecompressionError)
+            expect(() => decompress(new PassThrough(), encoding)).toThrow(CompressionError)
         })
     });
 
