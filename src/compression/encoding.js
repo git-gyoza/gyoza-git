@@ -3,13 +3,13 @@ const {PassThrough} = require('stream')
 
 /**
  * Represents a general encoding.
- * Provides {@link Encoding#compressionStream} and
- * {@link Encoding#decompressionStream} for streams operations.
+ * Provides {@link Encoder#compressionStream} and
+ * {@link Encoder#decompressionStream} for streams operations.
  */
-class Encoding {
+class Encoder {
 
     /**
-     * Instantiates a new Encoding.
+     * Instantiates a new Encoder.
      *
      * @param name the name of the encoding
      * @param compressionStream the compression stream
@@ -24,8 +24,8 @@ class Encoding {
 }
 
 module.exports = {
-    GZIP: new Encoding('gzip', zlib.createGzip, zlib.createGunzip),
-    DEFLATE: new Encoding('deflate', zlib.createDeflate, zlib.createInflate),
-    BROTLI: new Encoding('br', zlib.createBrotliCompress, zlib.createBrotliDecompress),
-    IDENTITY: new Encoding('identity', () => new PassThrough(), () => new PassThrough())
+    GZIP: new Encoder('gzip', zlib.createGzip, zlib.createGunzip),
+    DEFLATE: new Encoder('deflate', zlib.createDeflate, zlib.createInflate),
+    BROTLI: new Encoder('br', zlib.createBrotliCompress, zlib.createBrotliDecompress),
+    IDENTITY: new Encoder('identity', () => new PassThrough(), () => new PassThrough())
 }
