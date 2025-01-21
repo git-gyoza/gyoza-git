@@ -4,6 +4,18 @@ const { SERVER_NAME } = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
 
 /**
+ * Gets the client IP from the given request.
+ *
+ * @param request the request
+ * @returns {String} the ip
+ */
+function getIp(request) {
+    let ip = request.connection.remoteAddress
+    ip = ip.split(':')
+    return ip[ip.length - 1]
+}
+
+/**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
