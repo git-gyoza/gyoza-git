@@ -48,7 +48,7 @@ describe('HTTPHandler tests', () => {
                 'Body': true
             }, buffer)
             handler.handleRequest()
-            const decompressedRequest = handler.getRequest()
+            const decompressedRequest = handler.getRequestStream()
             let output = await readStreamContents(decompressedRequest)
             expect(output.toString()).toBe(expected)
         })
@@ -102,8 +102,8 @@ class MockHTTPHandler extends HTTPHandler {
         super(new MockRequest(method, path, headers, body), new MockResponse())
     }
 
-    getRequest() {
-        return this._request
+    getRequestStream() {
+        return this._requestStream
     }
 
     getResponse() {

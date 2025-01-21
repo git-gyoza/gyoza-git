@@ -60,6 +60,7 @@ class HTTPHandler {
      */
     constructor(request, response) {
         this._request = request
+        this._requestStream = request
         this._response = response
         this._responseStream = this._response
 
@@ -80,7 +81,7 @@ class HTTPHandler {
      */
     handleRequest() {
         this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
-        this._request = decompress(this._request, this._headers['Content-Encoding'])
+        this._requestStream = decompress(this._request, this._headers['Content-Encoding'])
 
         switch (this._method) {
             case 'GET':
