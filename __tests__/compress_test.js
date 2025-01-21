@@ -52,15 +52,12 @@ describe('tests for decompression', () => {
             const output = await readBuffer(decompressed)
             expect(output).toBe(expected)
         })
-    })
+    });
 
-    // new Map([
-    //     ['invalid', stream()],
-    //     ['gzip, invalid', stream('gzip')]
-    // ]).forEach((stream, encoding) => {
-    //     test(`should throw error on invalid encoding ${encoding}`, () => {
-    //         expect(() => decompress(stream, encoding)).toThrow(DecompressionError)
-    //     })
-    // })
+    ['invalid', 'gzip, invalid'].forEach((encoding) => {
+        test(`should throw error on invalid encoding ${encoding}`, () => {
+            expect(() => decompress(new PassThrough(), encoding)).toThrow(DecompressionError)
+        })
+    });
 
 });
