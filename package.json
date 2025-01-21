@@ -4,7 +4,11 @@
   "description": "A Node server with support for the git http-backend CGI program",
   "main": "app.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "jest": {
+    "coverageReporters": ["json-summary"]
   },
   "repository": {
     "type": "git",
