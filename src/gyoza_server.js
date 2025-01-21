@@ -177,7 +177,7 @@ class HTTPHandler {
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
-            if (body instanceof String) this._response.write(body)
+            if (typeof body === 'string') this._response.write(body)
             else this._response.write(JSON.stringify(body))
         }
         this._response.end()
