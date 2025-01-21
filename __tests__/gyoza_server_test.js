@@ -33,6 +33,19 @@ describe('HTTPHandler tests', () => {
         })
     }
 
+    test('response stream of unrecognized accept encoding should return error', async () => {
+        const handler = new MockHTTPHandler('GET', '', {
+            'Accept-Encoding': 'not_existing'
+        })
+        handler.handleRequest()
+        const response = handler.getResponse()
+        const output = await readStreamContents(response)
+        expect(response.statusCode).toEqual(400)
+        expect(output.toString()).toEqual(JSON.stringify({
+            'error': 'Unsupported encoding: not_existing'
+        }))
+    });
+
     [
         'identity', 'gzip',
         'deflate', 'br',
@@ -48,10 +61,23 @@ describe('HTTPHandler tests', () => {
                 'Body': true
             }, buffer)
             handler.handleRequest()
-            const decompressedRequest = handler.getRequest()
+            const decompressedRequest = handler.getRequestStream()
             let output = await readStreamContents(decompressedRequest)
             expect(output.toString()).toBe(expected)
         })
+    });
+
+    test('request stream of unrecognized content encoding should return error', async () => {
+        const handler = new MockHTTPHandler('GET', '', {
+            'Content-Encoding': 'not_existing'
+        })
+        handler.handleRequest()
+        const response = handler.getResponse()
+        const output = await readStreamContents(response)
+        expect(response.statusCode).toEqual(400)
+        expect(output.toString()).toEqual(JSON.stringify({
+            'error': 'Unsupported encoding: not_existing'
+        }))
     });
 
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
@@ -102,8 +128,8 @@ class MockHTTPHandler extends HTTPHandler {
         super(new MockRequest(method, path, headers, body), new MockResponse())
     }
 
-    getRequest() {
-        return this._request
+    getRequestStream() {
+        return this._requestStream
     }
 
     getResponse() {
@@ -151,10 +177,6 @@ class MockRequest {
 
     pipe(stream) {
         return this.body.pipe(stream)
-    }
-
-    read() {
-        return this.body.read()
     }
 
 }

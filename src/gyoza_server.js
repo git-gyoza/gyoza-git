@@ -60,6 +60,7 @@ class HTTPHandler {
      */
     constructor(request, response) {
         this._request = request
+        this._requestStream = request
         this._response = response
         this._responseStream = this._response
 
@@ -79,24 +80,32 @@ class HTTPHandler {
      * @private
      */
     handleRequest() {
-        this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
-        this._request = decompress(this._request, this._headers['Content-Encoding'])
+        try {
+            this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
+            this._requestStream = decompress(this._request, this._headers['Content-Encoding'])
 
-        switch (this._method) {
-            case 'GET':
-                return this._get()
-            case 'POST':
-                return this._post()
-            case 'PUT':
-                return this._put()
-            case 'PATCH':
-                return this._patch()
-            case 'DELETE':
-                return this._delete()
-            case 'HEAD':
-                return this._head()
-            default:
-                this._reply(405)
+            switch (this._method) {
+                case 'GET':
+                    return this._get()
+                case 'POST':
+                    return this._post()
+                case 'PUT':
+                    return this._put()
+                case 'PATCH':
+                    return this._patch()
+                case 'DELETE':
+                    return this._delete()
+                case 'HEAD':
+                    return this._head()
+                default:
+                    this._reply(405)
+            }
+        } catch (error) {
+            const errorMessage = error.message
+            this._log(`Error while parsing request of ${this._remoteAddress}(${this._method} ${this._path}): ${errorMessage}`)
+            this._reply(400, {
+                'error': errorMessage
+            })
         }
     }
 
@@ -176,10 +185,12 @@ class HTTPHandler {
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
-        if (compressionData.encoding !== 'identity')
-            headers['Content-Encoding'] = compressionData.encoding
-        this._responseStream = compressionData.stream
+        if (statusCode !== 400) {
+            const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
+            if (compressionData.encoding !== 'identity')
+                headers['Content-Encoding'] = compressionData.encoding
+            this._responseStream = compressionData.stream
+        }
 
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
