@@ -166,9 +166,10 @@ class HTTPHandler {
      * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
+     * @param terminate if true, will end the response stream
      * @private
      */
-    _reply(statusCode, body = null, headers = {}) {
+    _reply(statusCode, body = null, headers = {}, terminate = true) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
@@ -186,7 +187,7 @@ class HTTPHandler {
             if (typeof body === 'string') this._responseStream.write(body)
             else this._responseStream.write(JSON.stringify(body))
         }
-        this._responseStream.end()
+        if (terminate) this._responseStream.end()
     }
 
     /**
