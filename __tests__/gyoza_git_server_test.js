@@ -5,6 +5,7 @@ describe('parseGitPath tests', () => {
         '/path/',
         '/path/HEAD',
         '/path/info/refs',
+        '/path/info/refs?service=git-upload-pack',
         '/path/git-upload-pack',
         '/path/git-receive-pack',
         '/path/objects/',
