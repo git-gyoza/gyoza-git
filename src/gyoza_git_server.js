@@ -68,7 +68,8 @@ class GitHTTPHandler extends HTTPHandler {
 
     _run_backend() {
         const gitBackend = backend(this._path, (error, service) => this._backend(error, service))
-        this._requestStream.pipe(gitBackend).pipe(this._responseStream)
+        this._requestStream.pipe(gitBackend)
+        gitBackend.pipe(this._responseStream)
     }
 
     /**
@@ -92,7 +93,8 @@ class GitHTTPHandler extends HTTPHandler {
             const args = [...service.args, `${this.#repoDirectory}${strippedPath}`]
             const process = spawn(service.cmd, args)
             const serviceStream = service.createStream()
-            process.stdout.pipe(serviceStream).pipe(process.stdin)
+            serviceStream.pipe(process.stdin)
+            process.stdout.pipe(serviceStream)
         }
     }
 
