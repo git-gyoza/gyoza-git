@@ -102,11 +102,7 @@ class HTTPHandler {
                     this._reply(405)
             }
         } catch (error) {
-            const errorMessage = error.message
-            this._log(`Error while parsing request of ${this._remoteAddress}(${this._method} ${this._path}): ${errorMessage}`)
-            this._reply(400, {
-                'error': errorMessage
-            })
+            this._error(400, error)
         }
     }
 
@@ -184,22 +180,54 @@ class HTTPHandler {
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
-        headers['Server'] = SERVER_NAME
 
-        if (statusCode !== 400) {
+        try {
             const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
             if (compressionData.encoding !== 'identity')
                 headers['Content-Encoding'] = compressionData.encoding
             this._responseStream = compressionData.stream
+        } catch (error) {
+            this._error(400, error)
+            return
         }
 
+        this.#write(statusCode, headers, body)
+        if (terminate) this._responseStream.end()
+    }
+
+    /**
+     * An alias for {@link #_reply} that signals an error coming from
+     * either the client or the server.
+     *
+     * @param statusCode the status code
+     * @param error the error. If it is an instance of {@link Error}, then
+     *              the error message will be passed to the body
+     * @private
+     */
+    _error(statusCode, error = 'Unknown error') {
+        if (error instanceof Error) error = error.message
+        this._log(`Error with request ${this._remoteAddress}(${this._method} ${this._path}): ${error}`)
+        this.#write(statusCode, {}, {'error': error})
+        this._responseStream.end()
+    }
+
+    /**
+     * Writes to the response stream the given data.
+     *
+     * @param statusCode the status code
+     * @param headers an object representing the headers
+     * @param body if is not null, if the body is a string then it will be returned as is.
+     *             Otherwise, it will be wrapped in JSON
+     * @private
+     */
+    #write(statusCode, headers, body) {
+        headers['Server'] = SERVER_NAME
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
             if (typeof body === 'string') this._responseStream.write(body)
             else this._responseStream.write(JSON.stringify(body))
         }
-        if (terminate) this._responseStream.end()
     }
 
     /**
