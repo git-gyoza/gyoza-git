@@ -33,6 +33,19 @@ describe('HTTPHandler tests', () => {
         })
     }
 
+    test('response stream of unrecognized accept encoding should return error', async () => {
+        const handler = new MockHTTPHandler('GET', '', {
+            'Accept-Encoding': 'not_existing'
+        })
+        handler.handleRequest()
+        const response = handler.getResponse()
+        const output = await readStreamContents(response)
+        expect(response.statusCode).toEqual(400)
+        expect(output.toString()).toEqual(JSON.stringify({
+            'error': 'Unsupported encoding: not_existing'
+        }))
+    });
+
     [
         'identity', 'gzip',
         'deflate', 'br',
