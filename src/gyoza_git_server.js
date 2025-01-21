@@ -58,13 +58,33 @@ class GitHTTPHandler extends HTTPHandler {
     }
 
     _get() {
-        const repositoryDirectory = this.#repoDirectory + this._path.split('/')[1] //TODO: needs better parsing
-        const gitBackend = backend(repositoryDirectory, (error, service) => this._backend(error, service))
+        const gitBackend = backend(this._path, (error, service) => this._backend(error, service))
         this._requestStream.pipe(gitBackend).pipe(this._responseStream)
     }
 
+    /**
+     * Provides a callback function for the Git HTTP backend process.
+     *
+     * @param error if not undefined, it means that an error occurred and a 400 error will be returned
+     * @param service the actual object service, responsible for parsing the request and piping it
+     *                to the <code>git http-backend</code> command
+     * @private
+     */
     _backend(error, service) {
-        if (error) super._error(400, error)
+        if (error !== undefined) super._error(400, error)
+        else {
+            const strippedPath = parseGitPath(this._path)
+            super._log(`${this._remoteAddress} (${strippedPath}) => ${service.action}(${service.cmd})`)
+
+            super._reply(200, null, {
+                'Content-Type': service.type
+            }, false)
+
+            const args = [...service.args, `${this.#repoDirectory}${strippedPath}`]
+            const process = spawn(service.cmd, args)
+            const serviceStream = service.createStream()
+            process.stdout.pipe(serviceStream).pipe(process.stdin)
+        }
     }
 
 }
