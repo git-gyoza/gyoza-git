@@ -153,10 +153,6 @@ class MockRequest {
         return this.body.pipe(stream)
     }
 
-    read() {
-        return this.body.read()
-    }
-
 }
 
 /**
