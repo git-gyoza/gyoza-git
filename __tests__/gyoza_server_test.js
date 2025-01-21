@@ -157,12 +157,16 @@ class MockRequest {
 class MockResponse {
     statusCode
     headers
-    body
+    body = new PassThrough()
     ended = false
 
     writeHead(statusCode, headers) {
         this.statusCode = statusCode
         this.headers = headers
+    }
+
+    pipe(stream) {
+        return this.body.pipe(stream)
     }
 
     write(body) {
