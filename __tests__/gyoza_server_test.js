@@ -1,5 +1,5 @@
-const GyozaServer = require("../src/gyoza_server");
-const {SERVER_NAME} = require("../src/gyoza-git");
+const GyozaServer = require("../src/gyoza_server")
+const {SERVER_NAME} = require("../src/gyoza-git")
 
 describe('GyozaServer tests', () => {
 
@@ -71,24 +71,24 @@ class MockGyozaServer extends GyozaServer {
  * by the {@link http} module.
  */
 class MockResponse {
-    statusCode;
-    headers;
-    body;
-    ended = false;
+    statusCode
+    headers
+    body
+    ended = false
 
     writeHead(statusCode, headers) {
-        this.statusCode = statusCode;
-        this.headers = headers;
+        this.statusCode = statusCode
+        this.headers = headers
     }
 
     write(body) {
-        this.body = body;
+        this.body = body
     }
 
     end() {
-        this.ended = true;
+        this.ended = true
     }
 
 }
 
-module.exports = { MockGyozaServer, MockResponse };
+module.exports = { MockGyozaServer, MockResponse }

@@ -1,13 +1,13 @@
-const http = require('http');
+const http = require('http')
 
-const { SERVER_NAME } = require("./gyoza-git");
+const { SERVER_NAME } = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
 
 /**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
-    #port;
+    #port
 
     /**
      * Starts a new {@link http} server.
@@ -16,10 +16,10 @@ class GyozaServer {
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
-        this.#port = port;
+        this.#port = port
         http.createServer((request, response) =>
             this._handleRequest(request, response))
-            .listen(this.#port);
+            .listen(this.#port)
     }
 
     /**
@@ -33,25 +33,25 @@ class GyozaServer {
      * @private
      */
     _handleRequest(request, response) {
-        const method = request.method;
-        const path = request.url;
-        const headers = request.headers;
+        const method = request.method
+        const path = request.url
+        const headers = request.headers
 
         switch (method) {
             case 'GET':
-                return this._get(path, headers, request, response);
+                return this._get(path, headers, request, response)
             case 'POST':
-                return this._post(path, headers, request, response);
+                return this._post(path, headers, request, response)
             case 'PUT':
-                return this._put(path, headers, request, response);
+                return this._put(path, headers, request, response)
             case 'PATCH':
-                return this._patch(path, headers, request, response);
+                return this._patch(path, headers, request, response)
             case 'DELETE':
-                return this._delete(path, headers, request, response);
+                return this._delete(path, headers, request, response)
             case 'HEAD':
-                return this._head(path, headers, request, response);
+                return this._head(path, headers, request, response)
             default:
-                this._response(response, 405);
+                this._response(response, 405)
         }
     }
 
@@ -155,14 +155,14 @@ class GyozaServer {
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        response.writeHead(statusCode, headers);
+        response.writeHead(statusCode, headers)
         if (body != null) {
             if (body instanceof String) response.write(body)
-            else response.write(JSON.stringify(body));
+            else response.write(JSON.stringify(body))
         }
         response.end()
     }
 
 }
 
-module.exports = GyozaServer;
+module.exports = GyozaServer
