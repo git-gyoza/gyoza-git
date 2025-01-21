@@ -33,6 +33,10 @@ class GyozaServerError extends Error {
         throw new GyozaServerError(`Server has not been started yet`)
     }
 
+    static invalidDirectory(repoDirectory) {
+        throw new GyozaServerError(`Could not find directory '${repoDirectory}'`)
+    }
+
 }
 
 /**
