@@ -21,7 +21,6 @@ describe('HTTPHandler tests', () => {
             handler.handleRequest()
 
             const compressedResponse = handler.getResponseStream()
-            console.log(typeof compressedResponse)
             let output = await readStreamContents(compressedResponse)
             output = decompressData(output, encoding)
 
@@ -159,11 +158,14 @@ class MockResponse {
     statusCode
     headers
     body = new PassThrough()
-    ended = false
 
     writeHead(statusCode, headers) {
         this.statusCode = statusCode
         this.headers = headers
+    }
+
+    on(event, callback) {
+        return this.body.on(event, callback)
     }
 
     pipe(stream) {
@@ -171,11 +173,11 @@ class MockResponse {
     }
 
     write(body) {
-        this.body = body
+        return this.body.write(Buffer.from(body))
     }
 
     end() {
-        this.ended = true
+        return this.body.end()
     }
 
 }
