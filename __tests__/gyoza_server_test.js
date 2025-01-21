@@ -59,23 +59,7 @@ class MockGyozaServer extends GyozaServer {
      * @returns {MockResponse} the response containing all the data sent
      */
     handleRequest(method = 'GET', path = '', headers = {}, body = null) {
-        const request = {
-            'method': method,
-            'url': path,
-            'headers': headers,
-            'connection': {
-                'remoteAddress': '127.0.0.1'
-            },
-            'body': new PassThrough(),
-
-            constructor() {
-                if (body != null) this.body.end(body)
-            },
-
-            read() {
-                return this.body.read()
-            }
-        }
+        const request = new MockRequest(method, path, headers, body)
         const response = new MockResponse()
         this._handleRequest(request, response)
         return response
@@ -91,6 +75,33 @@ class MockGyozaServer extends GyozaServer {
         if (headers['Body'])
             super._response(request, response, 200, request.read().toString())
         else super._get(path, headers, request, response)
+    }
+
+}
+
+/**
+ * A mock for the actual request object offered
+ * by the {@link http} module.
+ */
+class MockRequest {
+
+    constructor(method, url, headers, body) {
+        this.method = method
+        this.url = url
+        this.headers = headers
+        this.connection = {
+            'remoteAddress': '127.0.0.1'
+        }
+        this.body = new PassThrough()
+        if (body != null) this.body.end(body)
+    }
+
+    pipe(stream) {
+        return this.body.pipe(stream)
+    }
+
+    read() {
+        return this.body.read()
     }
 
 }
