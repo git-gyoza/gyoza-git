@@ -16,10 +16,10 @@ function makeGETRequest(options) {
     })
 }
 
-function mockRequest() {
+function mockRequest(url = '/') {
     return {
         'request': 'GET',
-        'url': '/',
+        'url': url,
         'headers': {},
         'connection': {
             'remoteAddress': '127.0.0.1'
@@ -118,6 +118,14 @@ describe('GitHTTPHandler tests', () => {
         expect(data.toString()).toEqual(expected + ' .\n')
     })
 
+    test('backend should return 404 on invalid repository', async () => {
+        const handler = new MockGitHTTPHandler('/not/existing')
+        handler.backend(undefined, null)
+
+        const response = await handler.getResponse()
+        expect(response.statusCode).toEqual(404)
+    });
+
     test('backend should return 400 on error', async () => {
         const expected = 'Something went wrong'
         const handler = new MockGitHTTPHandler()
@@ -131,8 +139,8 @@ describe('GitHTTPHandler tests', () => {
 
 class MockGitHTTPHandler extends GitHTTPHandler {
 
-    constructor() {
-        super(mockRequest(), new MockResponseStream(), '.');
+    constructor(url = '/') {
+        super(mockRequest(url), new MockResponseStream(), '.');
     }
 
     async getResponse() {
