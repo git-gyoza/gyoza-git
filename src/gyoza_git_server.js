@@ -4,6 +4,18 @@ const backend = require('git-http-backend')
 const {GyozaServer, HTTPHandler} = require('./gyoza_server')
 
 /**
+ * Strips out from the given path the common requests
+ * expecting from valid Git requests (like 'info', 'objects'
+ * and more).
+ *
+ * @param path the path to parse
+ * @returns {String} the stripped path. If invalid, undefined is returned
+ */
+function parseGitPath(path) {
+    return path
+}
+
+/**
  * An implementation of {@link GyozaServer} that works with git-http-backend.
  */
 class GyozaGitServer extends GyozaServer {
