@@ -67,6 +67,8 @@ class MockGitHTTPHandler extends GitHTTPHandler {
 
     async getResponse() {
         return {
+            statusCode: this._response.statusCode,
+            headers: this._response.headers,
             body: await readStreamContents(this._responseStream)
         }
     }
@@ -78,5 +80,12 @@ class MockGitHTTPHandler extends GitHTTPHandler {
 }
 
 class MockResponseStream extends PassThrough {
+    statusCode = null
+    headers = null
+
+    writeHead(statusCode, headers) {
+        this.statusCode = statusCode
+        this.headers = headers
+    }
 
 }
