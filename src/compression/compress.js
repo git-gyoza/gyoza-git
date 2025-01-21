@@ -18,8 +18,11 @@ class CompressionError extends Error {
  * @returns {{encoding, stream}|*} the chosen encoding and the compressed stream
  */
 function compress(stream, acceptedEncoding) {
-    if (acceptedEncoding == null || acceptedEncoding.trim().length === 0) return stream
-    else {
+    const returned = {
+        encoding: Encoder.IDENTITY.name,
+        stream: stream
+    }
+    if (acceptedEncoding != null && acceptedEncoding.trim().length > 0) {
         const acceptedEncodings = acceptedEncoding.replace(' ', '').split(',')
 
         let encoder = undefined
@@ -29,11 +32,10 @@ function compress(stream, acceptedEncoding) {
         if (encoder === undefined) throw new CompressionError(acceptedEncoding)
         else stream = stream.pipe(encoder.compressionStream())
 
-        return {
-            encoding: encoder.name,
-            stream: stream
-        }
+        returned.encoding = encoder.name
+        returned.stream = stream
     }
+    return returned
 }
 
 /**
