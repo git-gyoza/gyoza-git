@@ -45,31 +45,20 @@ class GitHTTPHandler extends HTTPHandler {
     }
 
     _get() {
-        //TODO:
+        const directory = this.#repoDirectory
+        const gitBackend = backend(directory, this._backend)
+        this._request.pipe(gitBackend).pipe(this._responseStream)
     }
 
-    _backend(path, request, response) {
-        const requestedDirectory = `${this.#repoDirectory}/${path}`
-        return backend(path, (error, service) => {
-            if (error)
-                super._response(response, 400, {
-                    'error': error,
-                    'type': error.constructor.name
-                })
-            else {
-                super._response(response, 200, null, {
-                    'Content-Type': service.type
-                }, false)
-
-                const args = [...service.args, requestedDirectory]
-                const process = spawn(service.cmd, args)
-                const serviceStream = service.createStream()
-                process.stdout.pipe(serviceStream)
-                serviceStream.pipe(process.stdin)
-            }
-        })
+    _backend(error, service) {
+        if (error) {
+            super._reply(400, {
+                error: error,
+                errorName: error.name,
+            })
+        }
     }
 
 }
 
-new GyozaGitServer('/home/smith/gitserver').start()
+new GyozaGitServer('/home/smith/gitserver/falafel').start()
