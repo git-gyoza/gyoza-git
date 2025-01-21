@@ -54,7 +54,7 @@ describe('HTTPHandler tests', () => {
         })
     });
 
-    test('request stream of undefined coding should return error', async () => {
+    test('request stream of unrecognized content encoding should return error', async () => {
         const handler = new MockHTTPHandler('GET', '', {
             'Content-Encoding': 'not_existing'
         })
