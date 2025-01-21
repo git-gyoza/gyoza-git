@@ -21,6 +21,20 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  coverage-badge:
+    name: Generate Jest coverage report badges
+    runs-on: ubuntu-latest
+    steps:
+      # Necessary to push the generated badges to the repo
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      # Necessary to generate the coverage report.
+      # Make sure to add 'json-summary' to the coverageReporters in jest options
+      - name: Tests
+        run: npm test
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+
   publish-npm:
     name: Build and Publish
     needs: build
