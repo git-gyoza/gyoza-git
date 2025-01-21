@@ -3,29 +3,7 @@ const {PassThrough} = require('stream')
 
 const {GyozaServerError, GyozaServer} = require("../../src/server/gyoza_server")
 const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../../src/server/gyoza_git_server')
-const {readStreamContents} = require("../compression/compress_test");
-
-function makeGETRequest(options) {
-    return new Promise((resolve, reject) => {
-        http.get(options, (response) => {
-            let data = '';
-            response.on('data', (chunk) => data += chunk.toString());
-            response.on('end', () =>
-                resolve({ statusCode: response.statusCode, body: data }))
-        }).on('error', (err) => reject(err));
-    })
-}
-
-function mockRequest(url = '/') {
-    return {
-        'request': 'GET',
-        'url': url,
-        'headers': {},
-        'connection': {
-            'remoteAddress': '127.0.0.1'
-        }
-    }
-}
+const {readStreamContents} = require("../compression/compress_test")
 
 describe('parseGitPath tests', () => {
     [
@@ -65,6 +43,17 @@ describe('GyozaGitServer integration tests', () => {
     })
 
 })
+
+function makeGETRequest(options) {
+    return new Promise((resolve, reject) => {
+        http.get(options, (response) => {
+            let data = '';
+            response.on('data', (chunk) => data += chunk.toString());
+            response.on('end', () =>
+                resolve({ statusCode: response.statusCode, body: data }))
+        }).on('error', (err) => reject(err));
+    })
+}
 
 describe('GyozaGitServer tests', () => {
 
@@ -136,6 +125,17 @@ describe('GitHTTPHandler tests', () => {
     });
 
 })
+
+function mockRequest(url = '/') {
+    return {
+        'request': 'GET',
+        'url': url,
+        'headers': {},
+        'connection': {
+            'remoteAddress': '127.0.0.1'
+        }
+    }
+}
 
 class MockGitHTTPHandler extends GitHTTPHandler {
 
