@@ -39,14 +39,25 @@ describe('GitHTTPHandler tests', () => {
     test('backend valid service', async () => {
         const expectedType = 'text/plain'
         const expected = 'Hello, World!'
-        const handler = new MockGitHTTPHandler()
-        handler.backend(undefined, {
+        const serviceStream = new PassThrough()
+        const service = {
+            action: 'info',
+            cmd: 'echo',
+            args: [expected],
+            type: expectedType,
+            createStream: () => serviceStream
+        }
 
-        })
+        const handler = new MockGitHTTPHandler()
+        handler.backend(undefined, service)
+
         const response = await handler.getResponse()
         expect(response.statusCode).toEqual(200)
         expect(response.headers['Content-Type']).toEqual(expectedType)
-        expect(response.body).toBe(expected + '\n')
+
+        serviceStream.end()
+        const data = await readStreamContents(serviceStream)
+        expect(data.toString()).toEqual(expected + ' .\n')
     })
 
     test('backend should return 400 on error', async () => {
