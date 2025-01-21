@@ -110,3 +110,5 @@ function readStreamContents(stream) {
         stream.on('error', (error) => reject(error))
     })
 }
+
+module.exports = {decompressData, compressData}

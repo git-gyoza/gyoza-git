@@ -3,6 +3,8 @@ const {PassThrough} = require('stream')
 const {HTTPHandler} = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
+const {decompressData, compressData} = require('./compression/compress_test')
+
 describe('HTTPHandler tests', () => {
 
     [
