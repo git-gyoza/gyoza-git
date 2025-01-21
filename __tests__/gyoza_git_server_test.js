@@ -51,12 +51,14 @@ describe('GitHTTPHandler tests', () => {
                 new GitHTTPHandler(mockRequest(), null, directory))
                 .not.toThrow()
         })
-    })
+    });
 
-    test('should throw on invalid repositories directory', () => {
-        expect(() =>
-            new GitHTTPHandler(mockRequest(), null, 'invalid'))
-            .toThrow(GyozaServerError)
+    ['invalid', 'app.js'].forEach((path) => {
+        test(`should throw on invalid repositories directory: ${path}`, () => {
+            expect(() =>
+                new GitHTTPHandler(mockRequest(), null, path))
+                .toThrow(GyozaServerError)
+        })
     })
 
 })
