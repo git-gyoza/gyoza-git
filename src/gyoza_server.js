@@ -17,11 +17,28 @@ function getIp(request) {
 }
 
 /**
+ * Represents a type of error thrown by {@link GyozaServer}.
+ */
+class GyozaServerError extends Error {
+
+    constructor(message) {
+        super(message)
+    }
+
+    static alreadyStarted(port) {
+        throw new GyozaServerError(`Server already started on port: ${port}`)
+    }
+
+    static notStarted() {
+        throw new GyozaServerError(`Server has not been started yet`)
+    }
+
+}
+
+/**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
-    #port
-    #newHTTPHandler
 
     /**
      * Instantiates a new Gyoza server.
@@ -29,7 +46,9 @@ class GyozaServer {
      * @param newHTTPHandler a callback responsible for creating a custom HTTPHandler.
      */
     constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
-        this.#newHTTPHandler = newHTTPHandler
+        this._newHTTPHandler = newHTTPHandler
+        this._port = null
+        this._internalServer = null
     }
 
     /**
@@ -37,13 +56,33 @@ class GyozaServer {
      * All the requests will be redirected to the {@link HTTPHandler} callback
      * specified in the constructor.
      *
+     * If the server has not been started, a {@link GyozaServerError}
+     * is thrown.
+     *
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
-        this.#port = port
-        http.createServer((request, response) =>
-            this.#newHTTPHandler(request, response).handleRequest())
-            .listen(this.#port)
+        if (this._internalServer != null) GyozaServerError.alreadyStarted(port)
+        else {
+            this._port = port
+            this._internalServer = http.createServer((request, response) =>
+                this._newHTTPHandler(request, response).handleRequest())
+            this._internalServer.listen(this._port)
+        }
+    }
+
+    /**
+     * Stops the previously started {@link http} server.
+     *
+     * If the server has not been started, a {@link GyozaServerError}
+     * is thrown.
+     */
+    stop() {
+        if (this._internalServer != null) {
+            this._internalServer.close()
+            this._port = null
+            this._internalServer = null
+        } else GyozaServerError.notStarted()
     }
 
 }
@@ -87,17 +126,23 @@ class HTTPHandler {
 
             switch (this._method) {
                 case 'GET':
-                    return this._get()
+                    this._get()
+                    break
                 case 'POST':
-                    return this._post()
+                    this._post()
+                    break
                 case 'PUT':
-                    return this._put()
+                    this._put()
+                    break
                 case 'PATCH':
-                    return this._patch()
+                    this._patch()
+                    break
                 case 'DELETE':
-                    return this._delete()
+                    this._delete()
+                    break
                 case 'HEAD':
-                    return this._head()
+                    this._head()
+                    break
                 default:
                     this._reply(405)
             }
@@ -251,4 +296,4 @@ class HTTPHandler {
 
 }
 
-module.exports = {GyozaServer, HTTPHandler}
+module.exports = {GyozaServer, GyozaServerError, HTTPHandler}

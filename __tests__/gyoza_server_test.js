@@ -1,9 +1,52 @@
 const {PassThrough} = require('stream')
 
-const {HTTPHandler} = require("../src/gyoza_server")
+const {GyozaServer, GyozaServerError, HTTPHandler} = require("../src/gyoza_server")
 const {SERVER_NAME} = require("../src/gyoza-git")
 
 const {decompressData, compressData, readStreamContents} = require('./compression/compress_test')
+
+describe('GyozaServer tests', () => {
+
+    test('should reset all variables after stopping', () => {
+        const server = new MockServer()
+        const port = 12345
+        expect(server.getPort()).toBe(null)
+        expect(server.getInternalServer()).toBe(null)
+        server.start(port)
+        expect(server.getPort()).toBe(port)
+        expect(server.getInternalServer()).not.toBe(null)
+        server.stop()
+        expect(server.getPort()).toBe(null)
+        expect(server.getInternalServer()).toBe(null)
+    })
+
+    test('should throw error when starting already started server', () => {
+        const server = new GyozaServer()
+        server.start()
+        expect(() => server.start()).toThrow(GyozaServerError)
+        server.stop()
+    })
+
+    test('should throw error when stopping already stopped server', () => {
+        const server = new GyozaServer()
+        server.start()
+        server.stop()
+        expect(() => server.stop()).toThrow(GyozaServerError)
+    })
+
+})
+
+class MockServer extends GyozaServer {
+
+    getPort() {
+        return this._port
+    }
+
+    getInternalServer() {
+        return this._internalServer
+    }
+
+}
 
 describe('HTTPHandler tests', () => {
 
@@ -82,9 +125,9 @@ describe('HTTPHandler tests', () => {
 
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
-            const handler = new MockHTTPHandler()
-            handler.handleRequest(method)
-            const response = handler.getResponseStream()
+            const response = new MockResponse()
+            const handler = new HTTPHandler(new MockRequest(method, '', {}), response)
+            handler.handleRequest()
             expect(response.statusCode).toBe(405)
         })
     })
