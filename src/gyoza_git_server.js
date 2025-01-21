@@ -55,7 +55,7 @@ class GitHTTPHandler extends HTTPHandler {
      */
     constructor(request, response, repoDirectory) {
         super(request, response)
-        if (fs.existsSync(this.#repoDirectory) && fs.lstatSync(this.#repoDirectory).isDirectory())
+        if (fs.existsSync(repoDirectory) && fs.lstatSync(repoDirectory).isDirectory())
             this.#repoDirectory = repoDirectory
         else GyozaServerError.invalidDirectory(repoDirectory)
     }
