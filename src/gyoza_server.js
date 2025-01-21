@@ -185,10 +185,12 @@ class HTTPHandler {
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
-        if (compressionData.encoding !== 'identity')
-            headers['Content-Encoding'] = compressionData.encoding
-        this._responseStream = compressionData.stream
+        if (statusCode !== 400) {
+            const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
+            if (compressionData.encoding !== 'identity')
+                headers['Content-Encoding'] = compressionData.encoding
+            this._responseStream = compressionData.stream
+        }
 
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
