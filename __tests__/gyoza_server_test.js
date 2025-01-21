@@ -5,6 +5,14 @@ const {SERVER_NAME} = require("../src/gyoza-git")
 
 describe('GyozaServer tests', () => {
 
+    test('request stream should be decompressed', () => {
+        const server = new MockGyozaServer()
+        const response = server.handleRequest('GET', '', {
+            'Content-Encoding': 'gzip'
+        })
+        expect(response.body).toBe('Hello, World!')
+    });
+
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
             const server = new MockGyozaServer()
