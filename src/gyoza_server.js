@@ -1,13 +1,36 @@
 const http = require('http')
 
-const { SERVER_NAME } = require("./gyoza-git")
+const {SERVER_NAME} = require("./gyoza-git")
 const capitalizeFully = require('./string_utils')
+const {decompress, compress} = require("./compression/compress");
+
+/**
+ * Gets the client IP from the given request.
+ *
+ * @param request the request
+ * @returns {String} the ip
+ */
+function getIp(request) {
+    let ip = request.connection.remoteAddress
+    ip = ip.split(':')
+    return ip[ip.length - 1]
+}
 
 /**
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
     #port
+    #newHTTPHandler
+
+    /**
+     * Instantiates a new Gyoza server.
+     *
+     * @param newHTTPHandler a callback responsible for creating a custom HTTPHandler.
+     */
+    constructor(newHTTPHandler = (request, response) => new HTTPHandler(request, response)) {
+        this.#newHTTPHandler = newHTTPHandler
+    }
 
     /**
      * Starts a new {@link http} server.
@@ -18,8 +41,33 @@ class GyozaServer {
     start(port = 21125) {
         this.#port = port
         http.createServer((request, response) =>
-            this._handleRequest(request, response))
+            this.#newHTTPHandler(request, response))
             .listen(this.#port)
+    }
+
+}
+
+/**
+ * A Handler for HTTP requests sent from a client.
+ */
+class HTTPHandler {
+
+    /**
+     * Instantiates a new HTTPHandler.
+     *
+     * @param request the request object
+     * @param response the response object
+     */
+    constructor(request, response) {
+        this._request = request
+        this._response = response
+        this._responseStream = this._response
+
+        this._method = request.method
+        this._path = request.url
+        this._headers = request.headers
+
+        this._remoteAddress = getIp(request)
     }
 
     /**
@@ -28,30 +76,27 @@ class GyozaServer {
      * If an unrecognized method is used, a 405 'Method Not Allowed' message
      * will be returned.
      *
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _handleRequest(request, response) {
-        const method = request.method
-        const path = request.url
-        const headers = request.headers
+    handleRequest() {
+        this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
+        this._request = decompress(this._request, this._headers['Content-Encoding'])
 
-        switch (method) {
+        switch (this._method) {
             case 'GET':
-                return this._get(path, headers, request, response)
+                return this._get()
             case 'POST':
-                return this._post(path, headers, request, response)
+                return this._post()
             case 'PUT':
-                return this._put(path, headers, request, response)
+                return this._put()
             case 'PATCH':
-                return this._patch(path, headers, request, response)
+                return this._patch()
             case 'DELETE':
-                return this._delete(path, headers, request, response)
+                return this._delete()
             case 'HEAD':
-                return this._head(path, headers, request, response)
+                return this._head()
             default:
-                this._response(response, 405)
+                this._reply(405)
         }
     }
 
@@ -59,111 +104,111 @@ class GyozaServer {
      * Handles all the GET HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _get(path, headers, request, response) {
-        this._response(response, 405)
+    _get() {
+        this._reply(405)
     }
 
     /**
      * Handles all the POST HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _post(path, headers, request, response) {
-        this._response(response, 405)
+    _post() {
+        this._reply(405)
     }
 
     /**
      * Handles all the PUT HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _put(path, headers, request, response) {
-        this._response(response, 405)
+    _put() {
+        this._reply(405)
     }
 
     /**
      * Handles all the PATCH HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _patch(path, headers, request, response) {
-        this._response(response, 405)
+    _patch() {
+        this._reply(405)
     }
 
     /**
      * Handles all the DELETE HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _delete(path, headers, request, response) {
-        this._response(response, 405)
+    _delete() {
+        this._reply(405)
     }
 
     /**
      * Handles all the HEAD HTTP requests.
      * By default, returns 405 'Method Not Allowed'.
      *
-     * @param path the path requested
-     * @param headers the headers in the request
-     * @param request the request object
-     * @param response the response object
      * @private
      */
-    _head(path, headers, request, response) {
-        this._response(response, 405)
+    _head() {
+        this._reply(405)
     }
 
     /**
      * Sends a response to the client.
      *
-     * @param response the response object
      * @param statusCode the HTTP status code to return
      * @param body the body of the response (null by default)
      * @param headers the headers to send
-     * @param terminate if true, will close the response stream
+     * @param terminate if true, will end the response stream
      * @private
      */
-    _response(response, statusCode, body = null, headers = {}, terminate = true) {
+    _reply(statusCode, body = null, headers = {}, terminate = true) {
         const tempHeaders = {}
         Object.keys(headers).forEach(key =>
             tempHeaders[capitalizeFully(key.toString())] = headers[key])
         headers = tempHeaders
         headers['Server'] = SERVER_NAME
 
-        response.writeHead(statusCode, headers)
+        const compressionData = compress(this._responseStream, this._headers['Accept-Encoding'])
+        if (compressionData.encoding !== 'identity')
+            headers['Content-Encoding'] = compressionData.encoding
+        this._responseStream = compressionData.stream
+
+        this._response.writeHead(statusCode, headers)
+        this._log(`${this._remoteAddress} <- ${statusCode}`)
         if (body != null) {
-            if (body instanceof String) response.write(body)
-            else response.write(JSON.stringify(body))
+            if (typeof body === 'string') this._responseStream.write(body)
+            else this._responseStream.write(JSON.stringify(body))
         }
-        if (terminate) response.end()
+        if (terminate) this._responseStream.end()
+    }
+
+    /**
+     * Properly logs the given message to standard output.
+     *
+     * @param message the message
+     * @private
+     */
+    _log(message) {
+        const formatNumber = (number) => {
+            let string = number.toString()
+            return (string.length === 1 ? '0' : '') + string;
+        }
+
+        const now = new Date()
+        let dateFormat = `${formatNumber(now.getDay())}-${formatNumber(now.getMonth() + 1)}-${now.getFullYear()} `
+        dateFormat += `${formatNumber(now.getHours())}:${formatNumber(now.getMinutes())}:${formatNumber(now.getSeconds())}`
+
+        console.log(`[${dateFormat}] - ${message}`)
     }
 
 }
 
-module.exports = GyozaServer
+module.exports = {GyozaServer, HTTPHandler}
