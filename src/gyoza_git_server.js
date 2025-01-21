@@ -12,7 +12,8 @@ const {GyozaServer, HTTPHandler} = require('./gyoza_server')
  * @returns {String} the stripped path. If invalid, undefined is returned
  */
 function parseGitPath(path) {
-    return path
+    let regex = /\/(HEAD|info\/refs|objects\/(.*)|git-(upload|receive)-pack)?$/
+    return path.replace(regex, '')
 }
 
 /**
