@@ -39,8 +39,8 @@ class GyozaServerError extends Error {
  * A basic implementation wrapper for the HTTP server provided by the http module.
  */
 class GyozaServer {
-    #port
     #newHTTPHandler
+    #port
     #internalServer
 
     /**
@@ -79,8 +79,11 @@ class GyozaServer {
      * is thrown.
      */
     stop() {
-        if (this.#internalServer !== undefined) this.#internalServer.close()
-        else GyozaServerError.notStarted()
+        if (this.#internalServer !== undefined) {
+            this.#internalServer.close()
+            this.#port = undefined
+            this.#internalServer = undefined
+        } else GyozaServerError.notStarted()
     }
 
 }
