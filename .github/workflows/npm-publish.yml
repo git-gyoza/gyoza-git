@@ -28,6 +28,7 @@ jobs:
   coverage-badge:
     name: Generate Jest coverage report badges
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
