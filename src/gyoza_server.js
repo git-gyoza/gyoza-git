@@ -57,20 +57,30 @@ class GyozaServer {
      * All the requests will be redirected to the {@link HTTPHandler} callback
      * specified in the constructor.
      *
+     * If the server has not been started, a {@link GyozaServerError}
+     * is thrown.
+     *
      * @param port the port where the server will be run on
      */
     start(port = 21125) {
-        this.#port = port
-        this.#internalServer = http.createServer((request, response) =>
-            this.#newHTTPHandler(request, response).handleRequest())
-        this.#internalServer.listen(this.#port)
+        if (this.#internalServer !== undefined) GyozaServerError.alreadyStarted(port)
+        else {
+            this.#port = port
+            this.#internalServer = http.createServer((request, response) =>
+                this.#newHTTPHandler(request, response).handleRequest())
+            this.#internalServer.listen(this.#port)
+        }
     }
 
     /**
      * Stops the previously started {@link http} server.
+     *
+     * If the server has not been started, a {@link GyozaServerError}
+     * is thrown.
      */
     stop() {
-        this.#internalServer.close()
+        if (this.#internalServer !== undefined) this.#internalServer.close()
+        else GyozaServerError.notStarted()
     }
 
 }
