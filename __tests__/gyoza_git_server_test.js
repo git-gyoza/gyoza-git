@@ -1,7 +1,7 @@
 const {PassThrough} = require('stream')
 
 const {GyozaServerError} = require("../src/gyoza_server")
-const {parseGitPath, GitHTTPHandler} = require('../src/gyoza_git_server')
+const {parseGitPath, GitHTTPHandler, GyozaGitServer} = require('../src/gyoza_git_server')
 const {readStreamContents} = require("./compression/compress_test");
 
 function mockRequest() {
@@ -32,6 +32,22 @@ describe('parseGitPath tests', () => {
             expect(parseGitPath(path)).toEqual('/path')
         })
     })
+})
+
+describe('GyozaGitServer tests', () => {
+
+    [__dirname, '.', '../'].forEach((directory) => {
+        test(`should not throw on repositories directory: ${directory}`, () => {
+            expect(() => new GyozaGitServer(directory)).not.toThrow()
+        })
+    });
+
+    ['invalid', 'app.js'].forEach((path) => {
+        test(`should throw on invalid repositories directory: ${path}`, () => {
+            expect(() => new GyozaGitServer(path)).toThrow(GyozaServerError)
+        })
+    })
+
 })
 
 describe('GitHTTPHandler tests', () => {
@@ -67,22 +83,6 @@ describe('GitHTTPHandler tests', () => {
         expect(response.statusCode).toEqual(400)
         expect(response.body).toBe(JSON.stringify({'error': expected}))
     });
-
-    [__dirname, '.', '../'].forEach((directory) => {
-        test(`should not throw on repositories directory: ${directory}`, () => {
-            expect(() =>
-                new GitHTTPHandler(mockRequest(), null, directory))
-                .not.toThrow()
-        })
-    });
-
-    ['invalid', 'app.js'].forEach((path) => {
-        test(`should throw on invalid repositories directory: ${path}`, () => {
-            expect(() =>
-                new GitHTTPHandler(mockRequest(), null, path))
-                .toThrow(GyozaServerError)
-        })
-    })
 
 })
 

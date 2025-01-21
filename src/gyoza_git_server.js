@@ -30,7 +30,9 @@ class GyozaGitServer extends GyozaServer {
      */
     constructor(repoDirectory) {
         super((request, response) => new GitHTTPHandler(request, response, repoDirectory))
-        this.#repoDirectory = repoDirectory
+        if (fs.existsSync(repoDirectory) && fs.lstatSync(repoDirectory).isDirectory())
+            this.#repoDirectory = repoDirectory
+        else GyozaServerError.invalidDirectory(repoDirectory)
     }
 
     start(port = 21125) {
@@ -55,9 +57,7 @@ class GitHTTPHandler extends HTTPHandler {
      */
     constructor(request, response, repoDirectory) {
         super(request, response)
-        if (fs.existsSync(repoDirectory) && fs.lstatSync(repoDirectory).isDirectory())
-            this.#repoDirectory = repoDirectory
-        else GyozaServerError.invalidDirectory(repoDirectory)
+        this.#repoDirectory = repoDirectory
     }
 
     _get = this._run_backend
