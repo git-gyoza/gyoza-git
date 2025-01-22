@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const {NAME, DESCRIPTION, VERSION, REPOSITORIES_DIRECTORY_ENV_NAME} = require('../src/gyoza-git')
+const {NAME, DESCRIPTION, VERSION, REPOSITORIES_DIRECTORY_ENV_NAME, DEFAULT_PORT} = require('../src/gyoza-git')
 const {GyozaGitServer} = require("../app");
 
 function usage() {
@@ -8,7 +8,7 @@ ${DESCRIPTION}.
 
 Usage: ${NAME} [options]
 
-    -p, --port PORT                 Starts the server with the specified port.
+    -p, --port PORT                 Starts the server with the specified port (${DEFAULT_PORT} by default).
     -d, --directory DIRECTORY       Manually specifies the repositories directory.
     -h, --help                      Show this message
 
