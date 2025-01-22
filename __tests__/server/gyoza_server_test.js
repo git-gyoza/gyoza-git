@@ -124,15 +124,20 @@ describe('HTTPHandler tests', () => {
         }))
     });
 
-    test(`should send json content-type when sending json content`, async () => {
-        const handler = new MockHTTPHandler('GET', 'json')
-        handler.handleRequest()
+    new Map([
+        ['application/json', 'json'],
+        ['text/plain', 'string']
+    ]).forEach((type, contentType) => {
+        test(`should send ${contentType} content-type when sending ${type} content`, async () => {
+            const handler = new MockHTTPHandler('GET', type)
+            handler.handleRequest()
 
-        const response = handler.getResponseStream()
-        let output = await readStreamContents(response)
+            const response = handler.getResponseStream()
+            let output = await readStreamContents(response)
 
-        expect(handler.getResponse().headers['Content-Type']).toBe('application/json')
-        expect(output.toString()).toBe(JSON.stringify({'Hello': 'World!'}))
+            expect(handler.getResponse().headers['Content-Type']).toBe(contentType)
+            expect(output.toString()).toBe(JSON.stringify({'Hello': 'World!'}))
+        })
     });
 
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
@@ -206,6 +211,8 @@ class MockHTTPHandler extends HTTPHandler {
             super._reply(StatusCode.OK, 'World!')
         else if (this._path === 'json')
             super._reply(StatusCode.OK, {'Hello': 'World!'})
+        else if (this._path === 'string')
+            super._reply(StatusCode.OK, JSON.stringify({'Hello': 'World!'}))
         else super._get()
     }
 
