@@ -124,6 +124,17 @@ describe('HTTPHandler tests', () => {
         }))
     });
 
+    test(`should send json content-type when sending json content`, async () => {
+        const handler = new MockHTTPHandler('GET', 'json')
+        handler.handleRequest()
+
+        const response = handler.getResponseStream()
+        let output = await readStreamContents(response)
+
+        expect(handler.getResponse().headers['Content-Type']).toBe('application/json')
+        expect(output.toString()).toBe(JSON.stringify({'Hello': 'World!'}))
+    });
+
     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'SOMETHING_ELSE'].forEach(method => {
         test(`should respond with 405 to ${method} method`, () => {
             const response = new MockResponse()
@@ -193,6 +204,8 @@ class MockHTTPHandler extends HTTPHandler {
     _get() {
         if (this._path === 'hello')
             super._reply(StatusCode.OK, 'World!')
+        else if (this._path === 'json')
+            super._reply(StatusCode.OK, {'Hello': 'World!'})
         else super._get()
     }
 
