@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/node/v/gyoza-git?color=00aa00" alt="">
+  <img src="https://img.shields.io/npm/v/gyoza-git?color=00aa00" alt="">
   <img src="https://img.shields.io/github/actions/workflow/status/git-gyoza/gyoza-git/npm-publish.yml?label=tests" alt="">
   <img src="../badges/badges/coverage-lines.svg" alt="">
 </p>
