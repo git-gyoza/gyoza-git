@@ -30,7 +30,7 @@ describe('GyozaGitServer integration tests', () => {
 
     test('it should return 200 on valid request', async () => {
         const server = new GyozaGitServer('.')
-        server.start(10100)
+        server.start()
 
         const response = await makeGETRequest({
             hostname: 'localhost',
