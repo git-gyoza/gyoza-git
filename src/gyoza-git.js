@@ -8,5 +8,5 @@ module.exports = {
     VERSION: pkg['version'],
     REPOSITORIES_DIRECTORY_ENV_NAME: 'REPOSITORIES_DIRECTORY',
     SERVER_NAME: `${pkg['name']}/${pkg['version']}`,
-    DEFAULT_PORT: 22125
+    DEFAULT_PORT: 2215
 }
