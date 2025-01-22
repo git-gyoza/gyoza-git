@@ -34,6 +34,7 @@ jobs:
 
   coverage-badge:
     name: Generate Jest coverage report badges
+    needs: build
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
