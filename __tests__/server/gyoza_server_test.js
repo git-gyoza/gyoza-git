@@ -23,14 +23,14 @@ describe('GyozaServer tests', () => {
 
     test('should throw error when starting already started server', () => {
         const server = new GyozaServer()
-        server.start()
-        expect(() => server.start()).toThrow(GyozaServerError)
+        server.start(1011)
+        expect(() => server.start(1011)).toThrow(GyozaServerError)
         server.stop()
     })
 
     test('should throw error when stopping already stopped server', () => {
         const server = new GyozaServer()
-        server.start()
+        server.start(1012)
         server.stop()
         expect(() => server.stop()).toThrow(GyozaServerError)
     })
