@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const {NAME, DESCRIPTION, VERSION, REPOSITORIES_DIRECTORY_ENV_NAME} = require('./src/gyoza-git')
+const {GyozaGitServer} = require("./src/server/gyoza_git_server");
 
 function usage() {
     console.log(`${NAME} ${VERSION}
@@ -72,4 +73,10 @@ function main(args) {
             process.exit(1)
         }
     }
+
+    const server = new GyozaGitServer(repoDirectory)
+    if (port == null) server.start()
+    else server.start(port)
 }
+
+main(process.argv.slice(2))
