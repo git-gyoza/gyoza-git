@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const {NAME, DESCRIPTION, VERSION, REPOSITORIES_DIRECTORY_ENV_NAME} = require('./src/gyoza-git')
 
 function usage() {
