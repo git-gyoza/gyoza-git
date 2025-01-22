@@ -272,9 +272,11 @@ class HTTPHandler {
      */
     #write(statusCode, headers, body) {
         headers['Server'] = SERVER_NAME
-        if (body != null && typeof body !== 'string') {
-            headers['Content-Type'] = 'application/json'
-            body = JSON.stringify(body)
+        if (body != null) {
+            if (typeof body !== 'string') {
+                headers['Content-Type'] = 'application/json'
+                body = JSON.stringify(body)
+            } else headers['Content-Type'] = 'text/plain'
         }
         this._response.writeHead(statusCode, headers)
         this._log(`${this._remoteAddress} <- ${statusCode}`)
