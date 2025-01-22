@@ -1,4 +1,11 @@
-![test](../badges/badges/coverage-lines.svg)
+<p align="center">
+  <img src="https://img.shields.io/node/v/gyoza-git?color=00aa00" alt="">
+  <img src="https://img.shields.io/github/actions/workflow/status/git-gyoza/gyoza-git/npm-publish.yml?label=tests" alt="">
+  <img src="../badges/badges/coverage-lines.svg" alt="">
+</p>
+
+**gyoza-git** allows serving the [git http-backend](https://git-scm.com/docs/git-http-backend) module with a
+**HTTP server** in **NodeJS**, essentially creating a **Git repository server**.
 
 | Table of Contents |
 |-------------------|
