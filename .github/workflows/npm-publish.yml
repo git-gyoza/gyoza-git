@@ -86,4 +86,4 @@ jobs:
       - name: Publish to npmjs.com
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN }}
