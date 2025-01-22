@@ -42,3 +42,23 @@ function parseArguments(parsed, args) {
     if (parsed[argument] === undefined) parsed[argument] = args[1]
     parseArguments(parsed, args.slice(2))
 }
+
+function main(args) {
+    const parsed = new Map()
+    parseArguments(parsed, args)
+
+    let port = null
+    if (parsed['port'] !== undefined) {
+        try {
+            port = parsed['port']
+            port = Number(port)
+            if (port < 1 || port > 65535)
+                throw 'Invalid port'
+        } catch (error) {
+            console.log(`Invalid port "${port}". Expected an integer between 1 and 65535`)
+            process.exit(2)
+        }
+    }
+
+
+}
