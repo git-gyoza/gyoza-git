@@ -60,5 +60,16 @@ function main(args) {
         }
     }
 
-
+    let repoDirectory
+    if (parsed['directory'] !== undefined)
+        repoDirectory = parsed['directory']
+    else {
+        const envVarName = REPOSITORIES_DIRECTORY_ENV_NAME
+        repoDirectory = process.env[envVarName]
+        if (repoDirectory === undefined) {
+            console.log('No repositories directory specified.')
+            console.log(`You can specify one by using --directory or by defining the environment variable: ${envVarName}`)
+            process.exit(1)
+        }
+    }
 }
