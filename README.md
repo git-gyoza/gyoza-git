@@ -65,6 +65,7 @@ therefore it is **crucial** to set an appropriate value correctly.
 
   To make use of all this, it is **necessary** to provide a **new implementation of the HTTPHandler class** to the 
   **GyozaServer**, so that the methods logic can be overridden. Here is an example:
+
   ```javascript
     const {GyozaServer, HTTPHandler} = require('gyoza-git')
     
@@ -84,3 +85,7 @@ therefore it is **crucial** to set an appropriate value correctly.
     
     new GyozaServer((req, res) => new HelloHTTPHandler(req, res)).start()
     ```
+
+- [GyozaGitServer](../main/src/server/gyoza_git_server.js), the implementation of [GyozaServer](../main/src/server/gyoza_server.js)
+  used by the program to serve `git-http-backend`. Provides a [GitHTTPHandler](../main/src/server/gyoza_git_server.js)
+  that overrides `get`, `post`, `put`, `patch` and `head` by forwarding the requests to **git**.
