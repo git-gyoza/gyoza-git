@@ -127,7 +127,7 @@ class HTTPHandler {
     handleRequest() {
         try {
             this._log(`${this._remoteAddress} -> ${this._method} ${this._path}`)
-            this._requestStream = decompress(this._request, this._headers['Content-Encoding'])
+            this._requestStream = decompress(this._requestStream, this._headers['Content-Encoding'])
 
             switch (this._method) {
                 case 'GET':
