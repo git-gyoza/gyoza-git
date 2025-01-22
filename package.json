@@ -29,7 +29,9 @@
   },
   "homepage": "https://github.com/git-gyoza/gyoza-git#readme",
   "dependencies": {
-    "git-http-backend": "^1.1.2",
+    "git-http-backend": "^1.1.2"
+  },
+  "devDependencies": {
     "jest": "^29.7.0"
   }
 }
