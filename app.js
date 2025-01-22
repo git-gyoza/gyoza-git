@@ -1,3 +1,17 @@
+const {NAME, DESCRIPTION, VERSION, REPOSITORIES_DIRECTORY_ENV_NAME} = require('./src/gyoza-git')
+
+function usage() {
+    console.log(`${NAME} ${VERSION}
+${DESCRIPTION}.
+
+Usage: ${NAME} [options]
+
+    -p, --port PORT                 Starts the server with the specified port.
+    -d, --directory DIRECTORY       Manually specifies the repositories directory.
+    -h, --help                      Show this message
+
+If the -d argument is not specified, a ${REPOSITORIES_DIRECTORY_ENV_NAME} environment variable will be necessary.`)
+}
 
 function parseArguments(parsed, args) {
     if (args.length === 0) return
